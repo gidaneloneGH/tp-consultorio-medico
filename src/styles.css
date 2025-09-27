@@ -1,1 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
+@import '@angular/material/prebuilt-themes/indigo-pink.css'; 
+
+h1, h2, h3, p {
+    font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+html, body { 
+    height: 100%;
+    padding-top: 30px; 
+}
+
+body { 
+    margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; 
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+html::-webkit-scrollbar {
+    display: none;
+}

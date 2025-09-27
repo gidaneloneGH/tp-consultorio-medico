@@ -1,0 +1,26 @@
+<div *ngIf="usuarioEstaRegistrado" class="menu-deslogueado-container">
+    <div class="info-card">
+        <p>
+            Regístrate o inicia sesión para acceder a todas las funcionalidades principales
+        </p>
+
+        <div class="info">
+            <p>Como paciente registrado podés:</p>
+            <ul>
+                <li>- Solicitar y gestionar tus turnos médicos.</li>
+                <li>- Visualizar el historial y detalle de tus turnos agendados.</li>
+                <li>- Modificar tus datos personales y mantener tu información actualizada.</li>
+            </ul>
+        </div>
+
+        <div class="acciones">
+            <button mat-flat-button color="primary" routerLink="/login">
+                Iniciar Sesión
+            </button>
+            
+            <button mat-flat-button color="accent" routerLink="/register">
+                Registrarse
+            </button>
+        </div>
+    </div>
+</div>
