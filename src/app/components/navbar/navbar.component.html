@@ -3,12 +3,12 @@
     
     <nav class="links">
         <a routerLink="'/'">Inicio</a>
-        <a routerLink="'/servicios'">Servicios</a>
-        <a routerLink="'/contacto'">Contacto</a>
+        <a routerLink="/servicios">Servicios</a>
+        <a routerLink="/contacto">Contacto</a>
     </nav>
     
     <div class="actions">
-        <mat-icon class="icon" matTooltip="Iniciar sesión" routerLink="'/login'">
+        <mat-icon class="icon" matTooltip="Iniciar sesión" (click)="abrirDialogLogin()">
             login
         </mat-icon>
     </div>

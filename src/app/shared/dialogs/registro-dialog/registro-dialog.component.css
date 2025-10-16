@@ -1,0 +1,21 @@
+.input-field {
+  display: block;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+mat-dialog-content {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 24px 36px 24px;
+}
+
+mat-form-field {
+  width: 100%;
+  padding-top: 5px;
+}
+
+.titulo{
+    text-align: center;
+    color: rgba(0, 0, 0, 0.589);
+}

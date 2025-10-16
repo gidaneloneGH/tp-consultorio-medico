@@ -14,11 +14,11 @@
         </div>
 
         <div class="acciones">
-            <button mat-flat-button color="primary" routerLink="/login">
+            <button mat-flat-button color="primary" (click)="abrirDialogLogin()">
                 Iniciar Sesión
             </button>
             
-            <button mat-flat-button color="accent" routerLink="/register">
+            <button mat-flat-button color="accent" (click)="abrirDialogRegistro()">
                 Registrarse
             </button>
         </div>
