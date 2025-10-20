@@ -1,46 +1,54 @@
 <h2 mat-dialog-title class="titulo">Registrarse</h2>
 
-<div mat-dialog-content>
+<div mat-dialog-content [formGroup]="formularioRegistro">
   <mat-form-field appearance="outline" class="input-field">
     <mat-label>Nombre</mat-label>
-    <input matInput [(ngModel)]="nombre" />
+    <input matInput formControlName="nombre" />
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="input-field">
     <mat-label>Apellido</mat-label>
-    <input matInput [(ngModel)]="apellido" />
+    <input matInput formControlName="apellido" />
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="input-field">
     <mat-label>DNI</mat-label>
-    <input matInput [(ngModel)]="dni" />
+    <input matInput formControlName="dni" />
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="input-field">
     <mat-label>Correo</mat-label>
-    <input matInput type="email" [(ngModel)]="email" />
+    <input matInput type="email" formControlName="email" />
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="input-field">
+    <mat-label>Fecha de Nacimiento</mat-label>
+    <input matInput [matDatepicker]="picker" formControlName="fecha_nacimiento">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+
+  <mat-form-field appearance="outline" class="input-field">
     <mat-label>Teléfono</mat-label>
-    <input matInput [(ngModel)]="telefono" />
+    <input matInput formControlName="telefono" />
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="input-field">
     <mat-label>Cobertura</mat-label>
-    <mat-select [(ngModel)]="coberturaId">
+    <mat-select formControlName="id_cobertura">
       <mat-option *ngFor="let c of coberturas" [value]="c.id">{{ c.nombre }}</mat-option>
     </mat-select>
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="input-field">
     <mat-label>Contraseña</mat-label>
-    <input matInput type="password" [(ngModel)]="password" />
+    <input matInput type="password" formControlName="password" />
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="input-field">
     <mat-label>Repetir Contraseña</mat-label>
-    <input matInput type="password" [(ngModel)]="repetirPassword" />
+    <input matInput type="password" formControlName="repetirPassword" />
   </mat-form-field>
 </div>
 

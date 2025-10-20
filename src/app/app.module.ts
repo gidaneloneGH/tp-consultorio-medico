@@ -16,11 +16,14 @@ import { MatInputModule } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 import { RegistroDialogComponent } from './shared/dialogs/registro-dialog/registro-dialog.component';
-import { MatOptionModule } from '@angular/material/core';
+import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import {MatSelectModule} from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { CdkVirtualScrollableElement } from "@angular/cdk/scrolling";
 import { A11yModule } from "@angular/cdk/a11y";
+import { HttpClientModule } from '@angular/common/http';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { PacienteRegistradoComponent } from './components/paciente-registrado/paciente-registrado.component';
 
 
 @NgModule({
@@ -29,7 +32,8 @@ import { A11yModule } from "@angular/cdk/a11y";
     NavbarComponent,
     MenuComponent,
     LoginDialogComponent,
-    RegistroDialogComponent
+    RegistroDialogComponent,
+    PacienteRegistradoComponent
   ],
   imports: [
     BrowserModule,
@@ -48,7 +52,10 @@ import { A11yModule } from "@angular/cdk/a11y";
     MatSelectModule,
     MatFormFieldModule,
     CdkVirtualScrollableElement,
-    A11yModule
+    A11yModule,
+    HttpClientModule,
+    MatDatepickerModule,
+    MatNativeDateModule
 ],
   providers: [],
   bootstrap: [AppComponent]

@@ -24,7 +24,7 @@ export class NavbarComponent {
   
       dialogRef.afterClosed().subscribe(resultado => {
         if (resultado.exito){
-          this._utilService.openSnackBar("Inicio de sesión exitoso. Bienvenido!");
+          this._utilService.openSnackBar("Bienvenido");
         }
       })
     }

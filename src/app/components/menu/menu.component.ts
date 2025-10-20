@@ -25,9 +25,9 @@ export class MenuComponent {
       width: '400px'
     });
 
-    dialogRef.afterClosed().subscribe(resultado => {
-      if (resultado.exito){
-        this._utilService.openSnackBar("Inicio de sesión exitoso. Bienvenido!");
+    dialogRef.afterClosed().subscribe(result => {
+      if (result?.success){
+        this._utilService.openSnackBar("Bienvenido");
         this.usuarioEstaRegistrado = true;
       }
     })
