@@ -4,7 +4,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { RespuestaApiLogin, UsuarioLogin } from 'src/app/interfaces/response';
 import { Usuario } from 'src/app/interfaces/usuario';
-import { LoginService } from 'src/app/services/usuario/login.service';
+import { AuthService } from 'src/app/services/auth.service';
 import { UtilService } from 'src/app/services/util.service';
 
 @Component({
@@ -18,7 +18,7 @@ export class LoginDialogComponent implements OnInit{
   constructor(
     private dialogRef: MatDialogRef<LoginDialogComponent>,
     private _utilService: UtilService,
-    private _loginService: LoginService,
+    private _authService: AuthService,
     private fb: FormBuilder,
     private router: Router
   ) {}
@@ -38,8 +38,7 @@ export class LoginDialogComponent implements OnInit{
 
     console.log(this.formularioLogin);
     
-
-    this._loginService.login(
+    this._authService.login(
       String(this.formularioLogin.get('usuario')?.value),
       this.formularioLogin.get('password')?.value
     ).subscribe
@@ -50,10 +49,6 @@ export class LoginDialogComponent implements OnInit{
         if(res.codigo === 200 && res.jwt){
 
           this._utilService.openSnackBar("Bienvenido");
-          localStorage.setItem('TOKEN', res.jwt);
-          localStorage.setItem('USERID', res.payload[0].id)
-          localStorage.setItem('USERNAME', res.payload[0].nombre)
-          localStorage.setItem('USERROLE', res.payload[0].rol)
 
           this.dialogRef.close();
           this.router.navigate(['/inicio-paciente']);
@@ -71,5 +66,10 @@ export class LoginDialogComponent implements OnInit{
 
   onCancel() {
     this.dialogRef.close();
+  }
+
+  getCoberturas(){
+    console.log("hola");
+    
   }
 }

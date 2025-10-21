@@ -24,6 +24,7 @@ import { A11yModule } from "@angular/cdk/a11y";
 import { HttpClientModule } from '@angular/common/http';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { PacienteRegistradoComponent } from './components/paciente-registrado/paciente-registrado.component';
+import { NuevoTurnoComponent } from './components/nuevo-turno/nuevo-turno.component';
 
 
 @NgModule({
@@ -33,7 +34,8 @@ import { PacienteRegistradoComponent } from './components/paciente-registrado/pa
     MenuComponent,
     LoginDialogComponent,
     RegistroDialogComponent,
-    PacienteRegistradoComponent
+    PacienteRegistradoComponent,
+    NuevoTurnoComponent
   ],
   imports: [
     BrowserModule,

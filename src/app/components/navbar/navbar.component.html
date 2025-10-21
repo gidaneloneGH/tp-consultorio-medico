@@ -1,12 +1,9 @@
 <header class="navbar">
     <p class="titulo">Bienvenido a la clinica virtual</p>
     
-    <nav class="links">
-        <a routerLink="'/'">Inicio</a>
-    </nav>
-    
-    <div class="actions">
-        <mat-icon class="icon" matTooltip="Iniciar sesión" (click)="abrirDialogLogin()">
+    <div class="actions" *ngIf="usuarioEstaLogueado">
+        <p class="nombre-usuario" [matTooltip]="rolUsuario | titlecase" >{{nombreUsuario}}</p>
+        <mat-icon class="icon" matTooltip="Cerrar sesión" (click)="cerrarSesion()">
             login
         </mat-icon>
     </div>
