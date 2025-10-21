@@ -29,15 +29,15 @@ export class NuevoTurnoComponent implements OnInit {
   
   especialidades: Especialidad[] = [
     { id: 1, nombre: 'Cardiología' },
-    { id: 2, nombre: 'Dermatología' },
+    { id: 2, nombre: 'Traumatología' },
     { id: 3, nombre: 'Pediatría' },
   ];
 
   profesionalesMock: Profesional[] = [
-    { id: 101, id_especialidad: 1, nombre: 'Dr. Juan Pérez' },
-    { id: 102, id_especialidad: 1, nombre: 'Dra. Ana García' },
-    { id: 201, id_especialidad: 2, nombre: 'Dr. Raúl Gómez' },
-    { id: 301, id_especialidad: 3, nombre: 'Dra. Laura Díaz' },
+    { id: 101, id_especialidad: 1, nombre: 'Dr. Mateo González' },
+    { id: 102, id_especialidad: 1, nombre: 'Dra. Maria Pérez' },
+    { id: 201, id_especialidad: 2, nombre: 'Dr. Gustavo Costas' },
+    { id: 301, id_especialidad: 3, nombre: 'Dra. Sol Díaz' },
   ];
 
   horariosMock: Horario[] = [
