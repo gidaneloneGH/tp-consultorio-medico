@@ -1,0 +1,57 @@
+<div class="main-container">
+
+    <div class="list-card">
+        <h2 class="list-titulo">Mis Turnos Agendados</h2>
+        <p class="list-subtitulo">A continuación se muestran tus citas, ordenadas del más próximo al más lejano.</p>
+        
+        <div class="turnos-list">
+            
+            <div *ngIf="turnos.length === 0" class="no-turnos">
+                <mat-icon>event_busy</mat-icon>
+                <p>No tienes turnos agendados en este momento.</p>
+            </div>
+
+            <div *ngFor="let turno of turnos" 
+                 class="turno-item"
+                 [class.proximo]="turno.fecha.getTime() >= (date.now() - 86400000)" 
+                 [class.pasado]="turno.fecha.getTime() < (date.now() - 86400000)"
+                 (click)="toggleDetalles(turno)">
+                
+                <div class="turno-header">
+                    <div class="turno-fecha-hora">
+                        <span class="fecha">{{ turno.fecha | date: 'dd/MM/yyyy' }}</span>
+                        <span class="hora">{{ turno.hora }} hs</span>
+                    </div>
+                    <mat-icon class="expand-icon" [class.rotated]="turno.detallesVisible">
+                        {{ turno.detallesVisible ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+                    </mat-icon>
+                </div>
+                
+                <div class="turno-details" [class.expanded]="turno.detallesVisible">
+                    
+                    <p class="detail-line">
+                        {{ formatearFechaDetallada(turno.fecha, turno.hora) }}
+                    </p>
+                    
+                    <p class="detail-line">
+                        <strong>Especialista:</strong> {{ turno.especialista }}
+                    </p>
+                    
+                    <p class="detail-line">
+                        <strong>Especialidad:</strong> {{ turno.especialidad }}
+                    </p>
+
+                    <div class="action-buttons">
+                         <button mat-flat-button color="accent" *ngIf="turno.fecha.getTime() >= date.now()">Modificar</button>
+                         <button mat-flat-button color="warn" *ngIf="turno.fecha.getTime() >= date.now()">Cancelar Turno</button>
+                         <span class="turno-pasado-tag" *ngIf="turno.fecha.getTime() < (date.now() - 86400000)">Turno Pasado</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>

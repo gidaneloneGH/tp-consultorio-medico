@@ -1,0 +1,61 @@
+<div class="main-container">
+    <div class="schedule-card">
+        <h2 class="schedule-titulo">Turnos Programados</h2>
+        
+        <div class="schedule-header">
+            
+            <p class="schedule-info">
+                Mostrando turnos para el: 
+                <strong>{{ fechaSeleccionada | date: 'fullDate' }}</strong>
+                <span *ngIf="esHoy(fechaSeleccionada)" class="tag-hoy"> (HOY)</span>
+            </p>
+            
+            <mat-form-field appearance="outline" class="date-picker-field">
+                <mat-label>Seleccionar Día</mat-label>
+                <input matInput [matDatepicker]="picker" 
+                       [value]="fechaSeleccionada"
+                       (dateChange)="onDateChange($event)"
+                       placeholder="Día del Turno">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+        </div>
+        
+        <div class="turnos-tabla">
+            
+            <div class="tabla-cabecera">
+                <div class="col-hora">Hora</div>
+                <div class="col-nombre">Paciente</div>
+                <div class="col-edad">Edad</div>
+            </div>
+
+            <div *ngIf="turnosVisibles.length === 0" class="tabla-vacia">
+                <mat-icon>event_note</mat-icon>
+                <p>No tienes turnos programados para la fecha seleccionada.</p>
+            </div>
+
+            <div *ngFor="let turno of turnosVisibles" 
+                 class="turno-fila"
+                 [class.expanded-row]="turno.detallesVisible">
+                
+                <div class="turno-row-header" (click)="toggleNotas(turno)">
+                    <div class="col-hora">{{ turno.hora }}</div>
+                    <div class="col-nombre">
+                        <strong>{{ turno.pacienteApellido| uppercase }}, {{ turno.pacienteNombre }}</strong>
+                    </div>
+                    <div class="col-edad">{{ turno.pacienteEdad }} años</div>
+                    <mat-icon class="expand-icon" [class.rotated]="turno.detallesVisible">
+                        {{ turno.detallesVisible ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+                    </mat-icon>
+                </div>
+                
+                <div class="turno-notas-detalle" [class.expanded-content]="turno.detallesVisible">
+                    <p class="notas-label">Notas del Paciente:</p>
+                    <p class="notas-texto">{{ turno.notas }}</p>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>

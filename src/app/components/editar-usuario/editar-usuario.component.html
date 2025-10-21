@@ -1,0 +1,117 @@
+<div class="main-container">
+    <div class="form-card">
+        <div class="header-container">
+            <h2 class="form-titulo">Editar Usuario: {{ usuarioOriginal.nombre }} {{ usuarioOriginal.apellido }}</h2>
+            <button mat-icon-button color="warn" matTooltip="Volver a la lista" (click)="cancelar()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+        <p class="form-subtitulo">Modifique cualquier campo necesario para actualizar la información de este usuario.</p>
+
+        <form>
+            
+            <h3 class="seccion-titulo">Información de Perfil</h3>
+
+            <div class="input-group">
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Tipo de Usuario (Rol)</mat-label>
+                    <mat-select required [(ngModel)]="usuarioEditado.rol" name="rol">
+                        <mat-option *ngFor="let rol of rolesDisponibles" [value]="rol">
+                            {{ capitalizarRol(rol) }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-icon matSuffix>assignment_ind</mat-icon>
+                </mat-form-field>
+                
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>DNI</mat-label>
+                    <input matInput type="text" required [(ngModel)]="usuarioEditado.dni" name="dni">
+                    <mat-icon matSuffix>badge</mat-icon>
+                </mat-form-field>
+            </div>
+            
+            <div class="input-group">
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Nombre</mat-label>
+                    <input matInput type="text" required [(ngModel)]="usuarioEditado.nombre" name="nombre">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Apellido</mat-label>
+                    <input matInput type="text" required [(ngModel)]="usuarioEditado.apellido" name="apellido">
+                </mat-form-field>
+            </div>
+            
+            <h3 class="seccion-titulo">Contacto y Datos Adicionales</h3>
+
+            <div class="input-group">
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Correo Electrónico</mat-label>
+                    <input matInput type="email" required [(ngModel)]="usuarioEditado.email" name="email">
+                    <mat-icon matSuffix>email</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Teléfono</mat-label>
+                    <input matInput type="tel" required [(ngModel)]="usuarioEditado.telefono" name="telefono">
+                    <mat-icon matSuffix>phone</mat-icon>
+                </mat-form-field>
+            </div>
+            
+            <div class="input-group">
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Fecha de Nacimiento</mat-label>
+                    <input matInput type="date" [(ngModel)]="usuarioEditado.fecha_nacimiento" name="fechaNacimiento">
+                    <mat-icon matSuffix>cake</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Cobertura</mat-label>
+                    <mat-select [(ngModel)]="usuarioEditado.cobertura" name="cobertura">
+                        <mat-option *ngFor="let cob of coberturasDisponibles" [value]="cob">
+                            {{ cob }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-icon matSuffix>medical_services</mat-icon>
+                </mat-form-field>
+            </div>
+
+            <h3 class="seccion-titulo">Cambiar Contraseña (Opcional)</h3>
+            
+            <div class="input-group">
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Nueva Contraseña</mat-label>
+                    <input matInput type="password" 
+                           [(ngModel)]="nuevaPassword" 
+                           name="nuevaPassword">
+                </mat-form-field>
+                
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Confirmar Contraseña</mat-label>
+                    <input matInput type="password" 
+                           [(ngModel)]="confirmarPassword" 
+                           name="confirmarPassword"
+                           [class.input-error]="!passwordValida && nuevaPassword.length > 0">
+                    <mat-error *ngIf="nuevaPassword.length > 0 && confirmarPassword.length > 0 && !passwordValida">
+                        Las contraseñas no coinciden o son muy cortas.
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+
+            <div class="form-actions">
+                <button mat-button color="warn" (click)="cancelar()">
+                    Cancelar
+                </button>
+                <button mat-raised-button 
+                        color="primary" 
+                        [disabled]="!hayCambios || !passwordValida"
+                        (click)="guardarCambios()">
+                    <mat-icon>save</mat-icon>
+                    Guardar Cambios
+                </button>
+            </div>
+            
+        </form>
+    </div>
+</div>

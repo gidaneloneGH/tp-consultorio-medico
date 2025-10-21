@@ -1,0 +1,22 @@
+<div class="container">
+  <h1 class="titulo">Bienvenido, {{medico}}</h1>
+  
+  <div class="instruccion-card">
+    <mat-icon>info</mat-icon>
+    <p>Selecciona una de las opciones para empezar a gestionar tus tareas como especialista.</p>
+  </div>
+
+  <div class="opciones">
+    
+    <a class="opcion" routerLink="/turnos-programados">
+      <mat-icon class="icono">event_available</mat-icon>
+      <span class="texto-opcion">Ver mis turnos programados</span>
+    </a>
+
+    <a class="opcion" routerLink="/gestion-agenda">
+      <mat-icon class="icono">calendar_today</mat-icon>
+      <span class="texto-opcion">Gestión de agenda y horarios</span>
+    </a>
+    
+  </div>
+</div>

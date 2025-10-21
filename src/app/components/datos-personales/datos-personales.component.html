@@ -1,0 +1,80 @@
+<div class="main-container">
+    <div class="form-card">
+        <h2 class="form-titulo">Mis Datos Personales</h2>
+        <p class="form-subtitulo">Visualiza tu información y modifica solo los campos permitidos.</p>
+        
+        <h3 class="seccion-titulo">Información Básica (Solo Lectura)</h3>
+        
+        <div class="readonly-group">
+            <mat-form-field appearance="outline" class="half-width">
+                <mat-label>DNI</mat-label>
+                <input matInput [value]="datosOriginales.dni" [disabled]="true">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Apellido</mat-label>
+                <input matInput [value]="datosOriginales.apellido" [disabled]="true">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Nombre</mat-label>
+                <input matInput [value]="datosOriginales.nombre" [disabled]="true">
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Fecha de Nacimiento</mat-label>
+                <input matInput [value]="datosOriginales.fecha_nacimiento" [disabled]="true">
+            </mat-form-field>
+        </div>
+
+
+        <h3 class="seccion-titulo editable-header">Datos de Contacto y Cobertura (Editables)</h3>
+        
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Correo Electrónico</mat-label>
+            <input matInput type="email" [(ngModel)]="datosEditables.email">
+            <mat-icon matSuffix>email</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Teléfono</mat-label>
+            <input matInput type="tel" [(ngModel)]="datosEditables.telefono">
+            <mat-icon matSuffix>phone</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Cobertura</mat-label>
+            <mat-select [(ngModel)]="datosEditables.cobertura">
+                <mat-option *ngFor="let cob of coberturasDisponibles" [value]="cob">
+                    {{ cob }}
+                </mat-option>
+            </mat-select>
+            <mat-icon matSuffix>medical_services</mat-icon>
+        </mat-form-field>
+
+        <h3 class="seccion-titulo editable-header">Cambio de Contraseña</h3>
+        
+        <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Nueva Contraseña</mat-label>
+            <input matInput type="password" [(ngModel)]="nuevaPassword">
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Confirmar Contraseña</mat-label>
+            <input matInput type="password" [(ngModel)]="confirmarPassword" [class.input-error]="!passwordValida && confirmarPassword.length > 0">
+            <mat-error *ngIf="!passwordValida && confirmarPassword.length > 0">Las contraseñas no coinciden o son muy cortas.</mat-error>
+        </mat-form-field>
+
+
+        <div class="form-actions">
+            <button mat-raised-button 
+                    color="primary" 
+                    [disabled]="!hayCambios || !passwordValida"
+                    (click)="guardarCambios()">
+                <mat-icon>save</mat-icon>
+                Guardar Cambios
+            </button>
+        </div>
+        
+    </div>
+</div>

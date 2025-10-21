@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { UtilService } from 'src/app/services/util.service';
 
-// Interfaces para tipar los datos mockeados
 interface Especialidad {
   id: number;
   nombre: string;
@@ -9,7 +9,7 @@ interface Especialidad {
 
 interface Profesional {
   id: number;
-  id_especialidad: number; // Para el filtro
+  id_especialidad: number;
   nombre: string;
 }
 
@@ -118,8 +118,8 @@ export class NuevoTurnoComponent implements OnInit {
   
   confirmarTurno(): void {
     if (this.formularioCompleto) {
-        const mensaje = `Turno confirmado con ${this.profesionalSeleccionado?.nombre} el día ${this.fechaSeleccionada?.toLocaleDateString()} a las ${this.horaSeleccionada?.hora}`;
-        alert(mensaje); // Simula el pop-up
+      const mensaje = `Turno confirmado con ${this.profesionalSeleccionado?.nombre} el día ${this.fechaSeleccionada?.toLocaleDateString()} a las ${this.horaSeleccionada?.hora}`;
+      alert(mensaje);
     }
   }
 

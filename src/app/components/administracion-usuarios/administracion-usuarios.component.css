@@ -1,0 +1,133 @@
+.main-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 80px 20px 20px 20px;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+}
+
+.list-container {
+    width: 100%;
+    max-width: 1000px;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.list-titulo {
+    font-size: 2rem;
+    color: #1a237e;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.header-acciones {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.filtro-input {
+    flex-grow: 1;
+    min-width: 250px;
+}
+
+.filtro-select {
+    width: 180px;
+}
+
+.agregar-btn {
+    margin-left: auto;
+    background-color: #4caf50;
+    color: white;
+}
+
+.tabla-scroll {
+    overflow-x: auto;
+}
+
+.tabla-cabecera, .tabla-fila {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    min-width: 600px;
+}
+
+.tabla-cabecera {
+    background-color: #1a237e;
+    color: white;
+    font-weight: bold;
+    border-radius: 4px 4px 0 0;
+}
+
+.tabla-fila {
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s;
+}
+
+.tabla-fila:hover {
+    background-color: #f9f9f9;
+}
+
+.col-nombre {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+}
+.col-nombre .email {
+    font-size: 0.85rem;
+    color: #616161;
+    font-weight: normal;
+}
+
+.col-rol {
+    flex: 1.5;
+}
+
+.col-accion {
+    flex: 0.5;
+    text-align: right;
+}
+
+.rol-tag {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.rol-tag.administrador {
+    background-color: #ffcdd2;
+    color: #c62828;
+}
+.rol-tag.medico {
+    background-color: #c8e6c9;
+    color: #2e7d32;
+}
+.rol-tag.operador {
+    background-color: #bbdefb;
+    color: #1565c0;
+}
+.rol-tag.paciente {
+    background-color: #fff9c4;
+    color: #ffb300;
+}
+
+.tabla-vacia {
+    text-align: center;
+    padding: 40px;
+    color: #757575;
+    border: 1px dashed #bdbdbd;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+}
+.tabla-vacia mat-icon {
+    font-size: 3rem;
+    height: 3rem;
+    width: 3rem;
+}

@@ -1,0 +1,98 @@
+<div class="main-container">
+    <div class="form-card">
+        <div class="header-container">
+            <h2 class="form-titulo">Crear Nuevo Usuario</h2>
+            <button mat-icon-button color="warn" matTooltip="Volver a la lista" (click)="cancelar()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+        <p class="form-subtitulo">Complete la información del nuevo usuario (Operador, Médico o Administrador).</p>
+
+        <form>
+            
+            <h3 class="seccion-titulo">Información de Perfil</h3>
+
+            <div class="input-group">
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Tipo de Usuario (Rol)</mat-label>
+                    <mat-select required [(ngModel)]="nuevoUsuario.rol" name="rol">
+                        <mat-option *ngFor="let rol of rolesDisponibles" [value]="rol">
+                            {{ rol | uppercase }}
+                        </mat-option>
+                    </mat-select>
+                    <mat-icon matSuffix>assignment_ind</mat-icon>
+                    <mat-hint>Solo puede ser Administrador, Médico u Operador.</mat-hint>
+                </mat-form-field>
+                
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>DNI</mat-label>
+                    <input matInput type="text" required [(ngModel)]="nuevoUsuario.dni" name="dni">
+                    <mat-icon matSuffix>badge</mat-icon>
+                </mat-form-field>
+            </div>
+            
+            <div class="input-group">
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Nombre</mat-label>
+                    <input matInput type="text" required [(ngModel)]="nuevoUsuario.nombre" name="nombre">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Apellido</mat-label>
+                    <input matInput type="text" required [(ngModel)]="nuevoUsuario.apellido" name="apellido">
+                </mat-form-field>
+            </div>
+            
+            <h3 class="seccion-titulo">Credenciales y Contacto</h3>
+
+            <div class="input-group">
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Correo Electrónico</mat-label>
+                    <input matInput type="email" required [(ngModel)]="nuevoUsuario.email" name="email">
+                    <mat-icon matSuffix>email</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Teléfono</mat-label>
+                    <input matInput type="tel" required [(ngModel)]="nuevoUsuario.telefono" name="telefono">
+                    <mat-icon matSuffix>phone</mat-icon>
+                </mat-form-field>
+            </div>
+
+            <div class="input-group">
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Contraseña Inicial</mat-label>
+                    <input matInput type="password" required 
+                           [(ngModel)]="nuevoUsuario.password" 
+                           name="password">
+                    <mat-icon matSuffix>lock</mat-icon>
+                </mat-form-field>
+                
+                <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Confirmar Contraseña</mat-label>
+                    <input matInput type="password" required 
+                           [(ngModel)]="nuevoUsuario.confirmarPassword" 
+                           name="confirmarPassword"
+                           [class.input-error]="!passwordValida && nuevoUsuario.confirmarPassword.length > 0">
+                    <mat-error *ngIf="nuevoUsuario.password.length > 0 && nuevoUsuario.confirmarPassword.length > 0 && !passwordValida">
+                        Las contraseñas no coinciden.
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div class="form-actions">
+                <button mat-button color="warn" (click)="cancelar()">
+                    Cancelar
+                </button>
+                <button mat-raised-button 
+                        color="primary" 
+                        [disabled]="!formularioCompleto"
+                        (click)="crearUsuario()">
+                    <mat-icon>person_add</mat-icon>
+                    Crear Usuario
+                </button>
+            </div>
+            
+        </form>
+    </div>
+</div>

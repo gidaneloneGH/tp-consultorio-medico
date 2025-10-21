@@ -1,0 +1,154 @@
+.main-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 50px 20px;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+}
+
+.agenda-card {
+    width: 100%;
+    max-width: 800px;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.agenda-titulo {
+    font-size: 2rem;
+    color: #1a237e;
+    margin-bottom: 5px;
+}
+
+.agenda-subtitulo {
+    font-size: 1rem;
+    color: #616161;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.schedule-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.schedule-info {
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.tag-hoy {
+    background-color: #ffe0b2;
+    color: #e65100;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.date-picker-field {
+    width: 200px;
+}
+
+.seccion-titulo {
+    font-size: 1.2rem;
+    color: #333;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    padding-left: 5px;
+    border-left: 4px solid #1976d2;
+}
+
+.rangos-list {
+    margin-bottom: 30px;
+}
+
+.rango-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+.rango-item.cargado {
+    background-color: #f7f9fc;
+}
+
+.rango-texto {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a237e;
+}
+
+.rangos-vacio {
+    text-align: center;
+    padding: 30px;
+    color: #757575;
+    border: 1px dashed #bdbdbd;
+    border-radius: 8px;
+}
+.rangos-vacio mat-icon {
+    font-size: 2rem;
+    height: 2rem;
+    width: 2rem;
+}
+
+.agregar-btn {
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.nuevos-rangos-group {
+    padding: 15px;
+    border: 1px dashed #cccccc;
+    border-radius: 8px;
+    background-color: #fffde7;
+}
+
+.nuevo-rango-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.hora-input {
+    width: 150px;
+}
+
+.separador {
+    font-weight: 600;
+    color: #333;
+}
+
+.delete-nuevo {
+    margin-left: 10px;
+}
+
+.check-valid {
+    color: #4caf50;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eeeeee;
+}
+
+.form-actions button {
+    min-width: 200px;
+    font-weight: 600;
+}

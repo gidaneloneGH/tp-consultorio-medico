@@ -1,0 +1,61 @@
+<div class="main-container">
+    <div class="list-container">
+        <h2 class="list-titulo">Administración de Usuarios</h2>
+
+        <div class="header-acciones">
+            
+            <mat-form-field appearance="outline" class="filtro-input">
+                <mat-label>Buscar por Nombre o Apellido</mat-label>
+                <input matInput 
+                       placeholder="Ej: Pérez" 
+                       [(ngModel)]="filtroNombreApellido"
+                       (ngModelChange)="aplicarFiltros()">
+                <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="filtro-select">
+                <mat-label>Filtrar por Rol</mat-label>
+                <mat-select 
+                    [(ngModel)]="filtroRol"
+                    (ngModelChange)="aplicarFiltros()">
+                    <mat-option *ngFor="let rol of rolesDisponibles" [value]="rol === 'Todos' ? '' : rol">
+                        {{ capitalizarRol(rol) }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            
+            <button mat-mini-fab color="primary" class="agregar-btn" matTooltip="Agregar Nuevo Usuario" (click)="agregarUsuario()">
+                <mat-icon>add</mat-icon>
+            </button>
+        </div>
+        
+        <div class="tabla-scroll">
+            <div class="tabla-cabecera">
+                <div class="col-nombre">Nombre y Apellido</div>
+                <div class="col-rol">Rol</div>
+                <div class="col-accion">Acción</div>
+            </div>
+
+            <div *ngIf="usuariosFiltrados.length === 0" class="tabla-vacia">
+                <mat-icon>people_alt_off</mat-icon>
+                <p>No se encontraron usuarios que coincidan con los filtros aplicados.</p>
+            </div>
+
+            <div *ngFor="let usuario of usuariosFiltrados" class="tabla-fila">
+                <div class="col-nombre">
+                    <strong>{{ usuario.apellido | uppercase }}, {{ usuario.nombre }}</strong>
+                    <span class="email">{{ usuario.email }}</span>
+                </div>
+                <div class="col-rol">
+                    <span class="rol-tag" [ngClass]="usuario.rol">{{ capitalizarRol(usuario.rol) }}</span>
+                </div>
+                <div class="col-accion">
+                    <button mat-icon-button color="accent" matTooltip="Editar Usuario" (click)="editarUsuario(usuario)">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

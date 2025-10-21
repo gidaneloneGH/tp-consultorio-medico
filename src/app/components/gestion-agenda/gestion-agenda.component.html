@@ -1,0 +1,92 @@
+<div class="main-container">
+    <div class="agenda-card">
+        <h2 class="agenda-titulo">Gestión de Agenda</h2>
+        <p class="agenda-subtitulo">Define los días y rangos horarios en los que estarás disponible para atender.</p>
+
+        <div class="schedule-header">
+            <p class="schedule-info">
+                Gestionando horarios para el: 
+                <strong>{{ fechaSeleccionada | date: 'fullDate' }}</strong>
+                <span *ngIf="esHoy(fechaSeleccionada)" class="tag-hoy"> (HOY)</span>
+            </p>
+            
+            <mat-form-field appearance="outline" class="date-picker-field">
+                <mat-label>Seleccionar Día</mat-label>
+                <input matInput [matDatepicker]="picker" 
+                       [value]="fechaSeleccionada"
+                       (dateChange)="onDateChange($event)"
+                       placeholder="Día de la Agenda">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+        </div>
+        
+        <h3 class="seccion-titulo">Horarios Cargados ({{ rangosDelDia.length }})</h3>
+
+        <div class="rangos-list">
+            <div *ngIf="rangosDelDia.length === 0" class="rangos-vacio">
+                <mat-icon>schedule</mat-icon>
+                <p>No hay horarios de atención definidos para este día.</p>
+            </div>
+            
+            <div *ngFor="let rango of rangosDelDia" class="rango-item cargado">
+                <span class="rango-texto">
+                    {{ rango.horaInicio }} hrs — {{ rango.horaFin }} hrs
+                </span>
+                <button mat-icon-button color="warn" matTooltip="Eliminar Rango Existente" (click)="eliminarRangoExistente(rango)">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </div>
+        </div>
+
+        <h3 class="seccion-titulo nuevo-rango">Agregar Nuevos Rangos</h3>
+        
+        <button mat-raised-button color="accent" (click)="agregarNuevoRango()" class="agregar-btn">
+            <mat-icon>add</mat-icon>
+            Agregar Nuevo Rango
+        </button>
+
+        <div class="nuevos-rangos-group" *ngIf="rangosNuevos.length > 0">
+            <div *ngFor="let rango of rangosNuevos; let i = index" class="nuevo-rango-form">
+                
+                <mat-form-field appearance="outline" class="hora-input">
+                    <mat-label>Hora Inicio</mat-label>
+                    <input matInput type="time" 
+                           required 
+                           [(ngModel)]="rango.horaInicio" 
+                           (ngModelChange)="validarRango(rango)"
+                           [ngModelOptions]="{standalone: true}">
+                </mat-form-field>
+
+                <span class="separador">a</span>
+
+                <mat-form-field appearance="outline" class="hora-input">
+                    <mat-label>Hora Fin</mat-label>
+                    <input matInput type="time" 
+                           required 
+                           [(ngModel)]="rango.horaFin"
+                           (ngModelChange)="validarRango(rango)"
+                           [ngModelOptions]="{standalone: true}">
+                    <mat-error *ngIf="rango.horaFin.length > 0 && rango.horaFin <= rango.horaInicio">La hora fin debe ser posterior a la de inicio.</mat-error>
+                </mat-form-field>
+                
+                <button mat-icon-button color="warn" matTooltip="Eliminar Rango Nuevo" (click)="eliminarNuevoRango(i)" class="delete-nuevo">
+                    <mat-icon>close</mat-icon>
+                </button>
+                
+                <mat-icon *ngIf="rango.isValid" class="check-valid">check_circle</mat-icon>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button mat-raised-button 
+                    color="primary" 
+                    [disabled]="!puedeGuardar"
+                    (click)="guardarAgenda()">
+                <mat-icon>save</mat-icon>
+                Guardar Agenda
+            </button>
+        </div>
+        
+    </div>
+</div>

@@ -1,7 +1,7 @@
 .main-container {
     display: flex;
     justify-content: center;
-    align-items: flex-start; 
+    align-items: flex-start;
     padding: 80px 20px 20px 20px;
     min-height: 100vh;
     background-color: #f0f2f5;
@@ -9,7 +9,7 @@
 
 .form-card {
     width: 100%;
-    max-width: 600px; 
+    max-width: 800px;
     padding: 30px;
     background: #ffffff;
     border-radius: 12px;
@@ -18,7 +18,7 @@
 
 .form-titulo {
     font-size: 2rem;
-    color: #1a237e; 
+    color: #1a237e;
     margin-bottom: 5px;
     text-align: center;
 }
@@ -27,9 +27,28 @@
     font-size: 1rem;
     color: #616161;
     margin-bottom: 25px;
-    text-align: center;
     border-bottom: 1px solid #eeeeee;
     padding-bottom: 15px;
+    text-align: center;
+}
+
+.seccion-titulo {
+    font-size: 1.2rem;
+    color: #333;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    padding-left: 5px;
+    border-left: 4px solid #1976d2;
+}
+
+.readonly-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f8f8f8;
+    border-radius: 8px;
 }
 
 .full-width {
@@ -37,29 +56,31 @@
     margin-bottom: 15px;
 }
 
-.paso-condicional {
-    padding: 0;
-    margin-top: 10px;
-    border-left: 3px solid #e0e0e0;
-    padding-left: 15px;
-    transition: all 0.3s ease-in-out;
+.half-width {
+    width: 48%;
+    margin-bottom: 15px;
 }
 
-input[disabled] {
-    background-color: #f5f5f5 !important;
-    color: #424242 !important;
-    font-weight: bold;
+.readonly-group input[disabled] {
+    background-color: #ececec !important;
+    color: #616161 !important;
+    font-weight: 500;
+}
+
+.input-error {
+    border: 1px solid #f44336 !important;
+    box-shadow: 0 0 0 1px #f44336;
 }
 
 .form-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 15px;
     margin-top: 30px;
     padding-top: 20px;
     border-top: 1px solid #eeeeee;
 }
 
 .form-actions button {
-    min-width: 120px;
+    min-width: 200px;
+    font-weight: 600;
 }

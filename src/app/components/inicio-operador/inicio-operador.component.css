@@ -1,0 +1,124 @@
+.main-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 50px 20px;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+}
+
+.schedule-card {
+    width: 100%;
+    max-width: 1100px;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.schedule-titulo {
+    font-size: 2rem;
+    color: #1a237e;
+    margin-bottom: 5px;
+}
+
+.schedule-subtitulo {
+    font-size: 1rem;
+    color: #616161;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.schedule-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.schedule-info {
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.tag-hoy {
+    background-color: #ffe0b2;
+    color: #e65100;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.date-picker-field {
+    width: 200px;
+}
+
+.turnos-tabla {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tabla-cabecera, .agenda-fila {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    font-size: 1rem;
+}
+
+.tabla-cabecera {
+    background-color: #1a237e;
+    color: white;
+    font-weight: bold;
+}
+
+.agenda-fila {
+    background-color: white;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s;
+}
+
+.agenda-fila:hover {
+    background-color: #f9f9f9;
+}
+
+.col-nombre {
+    flex: 2;
+}
+.col-especialidad {
+    flex: 1.5;
+}
+.col-horario {
+    flex: 3;
+    font-weight: 500;
+    color: #0d47a1;
+}
+.col-accion {
+    flex: 1;
+    text-align: right;
+    min-width: 100px;
+}
+
+.especialidad-tag {
+    background-color: #bbdefb;
+    color: #1565c0;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.tabla-vacia {
+    text-align: center;
+    padding: 40px;
+    color: #757575;
+    border-top: 1px solid #f0f0f0;
+}
+.tabla-vacia mat-icon {
+    font-size: 3rem;
+    height: 3rem;
+    width: 3rem;
+}
