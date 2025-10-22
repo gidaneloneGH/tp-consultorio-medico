@@ -1,0 +1,27 @@
+<div class="container">
+  <h1 class="titulo">Panel de Administración</h1>
+  
+  <div class="instruccion-card">
+    <mat-icon>security</mat-icon>
+    <p>Bienvenido, {{admin}}. Selecciona la sección que deseas administrar.</p>
+  </div>
+
+  <div class="opciones-group">
+    
+    <a class="opcion" routerLink="/administracion-usuarios">
+      <mat-icon class="icono">group</mat-icon>
+      <span class="texto-opcion">Administración de Usuarios</span>
+    </a>
+    
+    <a class="opcion" routerLink="/gestion-coberturas">
+      <mat-icon class="icono">local_hospital</mat-icon>
+      <span class="texto-opcion">Gestión de Coberturas</span>
+    </a>
+
+    <a class="opcion" routerLink="/gestion-especialidades">
+      <mat-icon class="icono">school</mat-icon>
+      <span class="texto-opcion">Gestión de Especialidades</span>
+    </a>
+    
+  </div>
+</div>

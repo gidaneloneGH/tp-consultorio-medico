@@ -12,6 +12,9 @@ import { InicioMedicoComponent } from './components/inicio-medico/inicio-medico.
 import { TurnosProgramadosComponent } from './components/turnos-programados/turnos-programados.component';
 import { GestionAgendaComponent } from './components/gestion-agenda/gestion-agenda.component';
 import { InicioOperadorComponent } from './components/inicio-operador/inicio-operador.component';
+import { InicioAdminComponent } from './components/inicio-admin/inicio-admin.component';
+import { GestionCoberturasComponent } from './components/gestion-coberturas/gestion-coberturas.component';
+import { GestionEspecialidadesComponent } from './components/gestion-especialidades/gestion-especialidades.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'menu', pathMatch: 'full' },
@@ -27,6 +30,9 @@ const routes: Routes = [
   { path: 'turnos-programados', component: TurnosProgramadosComponent},
   { path: 'gestion-agenda', component: GestionAgendaComponent},
   { path: 'inicio-operador', component: InicioOperadorComponent},
+  { path: 'inicio-admin', component: InicioAdminComponent},
+  { path: 'gestion-coberturas', component: GestionCoberturasComponent},
+  { path: 'gestion-especialidades', component: GestionEspecialidadesComponent},
 
   {path: '**', redirectTo: 'menu', pathMatch: 'full'}
 

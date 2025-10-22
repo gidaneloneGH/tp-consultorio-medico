@@ -1,0 +1,68 @@
+<div class="main-container">
+    <div class="gestion-card">
+        <h2 class="gestion-titulo">Gestión de Coberturas</h2>
+        <p class="gestion-subtitulo">Alta, modificación y eliminación de obras sociales/prepagas.</p>
+
+        <h3 class="seccion-titulo">Crear Nueva Cobertura</h3>
+        <div class="alta-form">
+            <mat-form-field appearance="outline" class="alta-input">
+                <mat-label>Nombre de la Cobertura</mat-label>
+                <input matInput 
+                       [(ngModel)]="nuevaCoberturaNombre" 
+                       placeholder="Ej: OSDE 210"
+                       (keyup.enter)="crearCobertura()">
+            </mat-form-field>
+            <button mat-raised-button color="primary" [disabled]="!nuevaCoberturaNombre.trim()" (click)="crearCobertura()">
+                <mat-icon>add_circle_outline</mat-icon>
+                Dar de Alta
+            </button>
+        </div>
+
+        <h3 class="seccion-titulo">Coberturas Existentes</h3>
+        
+        <div class="tabla-scroll">
+            <div class="tabla-cabecera">
+                <div class="col-nombre">Nombre</div>
+                <div class="col-accion">Acciones</div>
+            </div>
+            
+            <div *ngFor="let cob of coberturas" class="tabla-fila">
+                
+                <ng-container *ngIf="coberturaEditada?.id !== cob.id; else edicion">
+                    <div class="col-nombre">
+                        {{ cob.nombre }}
+                        <span class="asociada-tag" *ngIf="(usuariosConCobertura[cob.id]?.length || 0) > 0">
+                            ({{ usuariosConCobertura[cob.id]?.length || 0 }} asociado/s)
+                        </span>
+                    </div>
+                    <div class="col-accion">
+                        <button mat-icon-button color="accent" matTooltip="Modificar Cobertura" (click)="iniciarEdicion(cob)">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                        <button mat-icon-button color="warn" matTooltip="Eliminar Cobertura" (click)="eliminarCobertura(cob.id, cob.nombre)">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div>
+                </ng-container>
+
+                <ng-template #edicion>
+                    <div class="col-nombre edicion-input-col">
+                        <mat-form-field appearance="outline" class="full-width-input">
+                            <input matInput [(ngModel)]="coberturaEditada!.nombre" (keyup.enter)="guardarEdicion()">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-accion">
+                        <button mat-icon-button color="primary" matTooltip="Guardar Cambios" (click)="guardarEdicion()">
+                            <mat-icon>save</mat-icon>
+                        </button>
+                        <button mat-icon-button color="basic" matTooltip="Cancelar" (click)="cancelarEdicion()">
+                            <mat-icon>cancel</mat-icon>
+                        </button>
+                    </div>
+                </ng-template>
+                
+            </div>
+        </div>
+        
+    </div>
+</div>

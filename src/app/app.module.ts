@@ -34,6 +34,9 @@ import { InicioMedicoComponent } from './components/inicio-medico/inicio-medico.
 import { TurnosProgramadosComponent } from './components/turnos-programados/turnos-programados.component';
 import { GestionAgendaComponent } from './components/gestion-agenda/gestion-agenda.component';
 import { InicioOperadorComponent } from './components/inicio-operador/inicio-operador.component';
+import { InicioAdminComponent } from './components/inicio-admin/inicio-admin.component';
+import { GestionCoberturasComponent } from './components/gestion-coberturas/gestion-coberturas.component';
+import { GestionEspecialidadesComponent } from './components/gestion-especialidades/gestion-especialidades.component';
 
 
 @NgModule({
@@ -53,7 +56,10 @@ import { InicioOperadorComponent } from './components/inicio-operador/inicio-ope
     InicioMedicoComponent,
     TurnosProgramadosComponent,
     GestionAgendaComponent,
-    InicioOperadorComponent
+    InicioOperadorComponent,
+    InicioAdminComponent,
+    GestionCoberturasComponent,
+    GestionEspecialidadesComponent
   ],
   imports: [
     BrowserModule,

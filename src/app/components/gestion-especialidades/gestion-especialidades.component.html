@@ -1,0 +1,68 @@
+<div class="main-container">
+    <div class="gestion-card">
+        <h2 class="gestion-titulo">Gestión de Especialidades Médicas</h2>
+        <p class="gestion-subtitulo">Alta, modificación y eliminación de especialidades ofrecidas por la clínica.</p>
+
+        <h3 class="seccion-titulo">Crear Nueva Especialidad</h3>
+        <div class="alta-form">
+            <mat-form-field appearance="outline" class="alta-input">
+                <mat-label>Nombre de la Especialidad</mat-label>
+                <input matInput 
+                       [(ngModel)]="nuevaEspecialidadNombre" 
+                       placeholder="Ej: Odontología"
+                       (keyup.enter)="crearEspecialidad()">
+            </mat-form-field>
+            <button mat-raised-button color="primary" [disabled]="!nuevaEspecialidadNombre.trim()" (click)="crearEspecialidad()">
+                <mat-icon>add_circle_outline</mat-icon>
+                Dar de Alta
+            </button>
+        </div>
+
+        <h3 class="seccion-titulo">Especialidades Existentes</h3>
+        
+        <div class="tabla-scroll">
+            <div class="tabla-cabecera">
+                <div class="col-nombre">Nombre</div>
+                <div class="col-accion">Acciones</div>
+            </div>
+            
+            <div *ngFor="let esp of especialidades" class="tabla-fila">
+                
+                <ng-container *ngIf="especialidadEditada?.id !== esp.id; else edicion">
+                    <div class="col-nombre">
+                        {{ esp.nombre }}
+                        <span class="asociada-tag" *ngIf="(medicosConEspecialidad[esp.id]?.length || 0) > 0">
+                            ({{ (medicosConEspecialidad[esp.id]?.length || 0) }} asociado/s)
+                        </span>
+                    </div>
+                    <div class="col-accion">
+                        <button mat-icon-button color="accent" matTooltip="Modificar Especialidad" (click)="iniciarEdicion(esp)">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                        <button mat-icon-button color="warn" matTooltip="Eliminar Especialidad" (click)="eliminarEspecialidad(esp.id, esp.nombre)">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div>
+                </ng-container>
+
+                <ng-template #edicion>
+                    <div class="col-nombre edicion-input-col">
+                        <mat-form-field appearance="outline" class="full-width-input">
+                            <input matInput [(ngModel)]="especialidadEditada!.nombre" (keyup.enter)="guardarEdicion()">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-accion">
+                        <button mat-icon-button color="primary" matTooltip="Guardar Cambios" (click)="guardarEdicion()">
+                            <mat-icon>save</mat-icon>
+                        </button>
+                        <button mat-icon-button color="basic" matTooltip="Cancelar" (click)="cancelarEdicion()">
+                            <mat-icon>cancel</mat-icon>
+                        </button>
+                    </div>
+                </ng-template>
+                
+            </div>
+        </div>
+        
+    </div>
+</div>
