@@ -2,10 +2,13 @@ export interface Usuario {
     nombre: string,
     apellido: string,
     dni: string,
-    correo: string,
+    email: string,
     telefono: string,
     contraseña: string,
-    id_cobertura: string,
-    rol?: string,
-    fecha_nacimiento?: string
+    id_cobertura: number,
+    rol: string,
+    fecha_nacimiento?: string,
+    id?: number,
+    nombre_cobertura?: string;
+    password?: string;
 }

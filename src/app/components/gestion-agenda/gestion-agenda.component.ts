@@ -1,33 +1,31 @@
-import { Component, OnInit } from '@angular/core';
-
-interface RangoHorario {
-  id: number;
-  dia: string;
-  horaInicio: string;
-  horaFin: string;
-}
-
-interface NuevoRangoInput {
-  horaInicio: string;
-  horaFin: string;
-  isValid: boolean;
-}
+import { Component, OnInit, inject } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { AgendaService } from 'src/app/services/agenda/agenda.service'; // Importar el servicio
+import { UtilService } from 'src/app/services/util.service'; 
+import { RangoHorario, NuevoRangoInput, CrearAgendaPayload } from 'src/app/interfaces/agenda'; // Importar interfaces
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-gestion-agenda',
   templateUrl: './gestion-agenda.component.html',
-  styleUrls: ['./gestion-agenda.component.css']
+  styleUrls: ['./gestion-agenda.component.css'],
+  providers: [DatePipe] // Necesario si no está en el módulo
 })
 export class GestionAgendaComponent implements OnInit {
 
-  fechaSeleccionada: Date = new Date(); 
-  
-  agendaMock: RangoHorario[] = [
-    { id: 1, dia: this.formatFecha(new Date()), horaInicio: '08:00', horaFin: '12:00' },
-    { id: 2, dia: this.formatFecha(new Date()), horaInicio: '14:00', horaFin: '18:00' },
-    { id: 3, dia: this.formatFecha(this.getNextDay()), horaInicio: '09:00', horaFin: '13:00' },
-  ];
+  // Inyección de servicios
+  private _agendaService = inject(AgendaService);
+  private _utilService = inject(UtilService);
+  private datePipe = inject(DatePipe);
 
+
+  private idMedico: number = Number(localStorage.getItem('USERID')!); 
+  private idEspecialidadPorDefecto: number = 16;
+  
+  fechaSeleccionada: Date = new Date(); 
+  minDate: Date = new Date();
+  isLoading: boolean = false;
+  
   rangosDelDia: RangoHorario[] = []; 
   
   rangosNuevos: NuevoRangoInput[] = []; 
@@ -38,22 +36,8 @@ export class GestionAgendaComponent implements OnInit {
     this.aplicarFiltroFecha(this.fechaSeleccionada);
   }
 
-  private getNextDay(): Date {
-      const nextDay = new Date();
-      nextDay.setDate(nextDay.getDate() + 1);
-      return nextDay;
-  }
-  
   private formatFecha(date: Date): string {
-    const d = new Date(date);
-    let month = '' + (d.getMonth() + 1);
-    let day = '' + d.getDate();
-    const year = d.getFullYear();
-
-    if (month.length < 2) month = '0' + month;
-    if (day.length < 2) day = '0' + day;
-
-    return [year, month, day].join('-');
+    return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
   }
 
   esHoy(fecha: Date): boolean {
@@ -65,15 +49,34 @@ export class GestionAgendaComponent implements OnInit {
   }
 
   aplicarFiltroFecha(nuevaFecha: Date | null): void {
-    if (!nuevaFecha) return;
+  if (!nuevaFecha) return;
+  
+  this.isLoading = true;
+  this.fechaSeleccionada = nuevaFecha;
+  const diaString = this.formatFecha(nuevaFecha);
 
-    this.fechaSeleccionada = nuevaFecha;
-    const diaString = this.formatFecha(nuevaFecha);
-    
-    this.rangosDelDia = this.agendaMock.filter(r => r.dia === diaString);
-        
-    this.rangosNuevos = [];
-  }
+  this.rangosNuevos = []; 
+
+  // Llamada al servicio
+  this._agendaService.obtenerAgendaPorDia(this.idMedico).subscribe({
+    next: (rangos) => {
+      // 🔹 Filtrar por la fecha seleccionada
+      this.rangosDelDia = rangos.filter(rango => {
+        const fechaRango = this.formatFecha(new Date(rango.fecha));
+        return fechaRango === diaString;
+      });
+
+      console.log('Rangos filtrados:', this.rangosDelDia);
+      this.isLoading = false;
+    },
+    error: (error) => {
+      this._utilService.openSnackBar(`Error cargando agenda: ${error.message}`);
+      this.rangosDelDia = [];
+      this.isLoading = false;
+    }
+  });
+}
+
 
   agregarNuevoRango(): void {
     this.rangosNuevos.push({ 
@@ -85,9 +88,7 @@ export class GestionAgendaComponent implements OnInit {
   
   validarRango(rango: NuevoRangoInput): void {
       const formatoValido = rango.horaInicio.length === 5 && rango.horaFin.length === 5;
-      
-      const secuenciaValida = rango.horaFin > rango.horaInicio;
-                
+      const secuenciaValida = rango.horaFin > rango.horaInicio;  
       rango.isValid = formatoValido && secuenciaValida;
   }
 
@@ -98,33 +99,40 @@ export class GestionAgendaComponent implements OnInit {
   guardarAgenda(): void {
     if (!this.puedeGuardar) return;
 
+    this.isLoading = true;
     const diaGuardar = this.formatFecha(this.fechaSeleccionada);
+    let peticionesGuardado: Observable<number>[] = [];
     
-    const nuevosRangosGuardados: RangoHorario[] = this.rangosNuevos.map(r => ({
-      id: Math.floor(Math.random() * 1000) + 100,
-      dia: diaGuardar,
-      horaInicio: r.horaInicio,
-      horaFin: r.horaFin,
-    }));
-
-    this.agendaMock = [...this.agendaMock, ...nuevosRangosGuardados];
+    this.rangosNuevos.forEach(rango => {
+        const payload: CrearAgendaPayload = {
+            id_medico: this.idMedico,
+            id_especialidad: this.idEspecialidadPorDefecto,
+            fecha: diaGuardar,
+            hora_entrada: `${rango.horaInicio}:00`,
+            hora_salida: `${rango.horaFin}:00`,    
+        };
+        peticionesGuardado.push(this._agendaService.crearAgenda(payload));
+    });
     
-    this.aplicarFiltroFecha(this.fechaSeleccionada); 
+    const primerRango = this.rangosNuevos[0];
+    const payload: CrearAgendaPayload = {
+        id_medico: this.idMedico,
+        id_especialidad: this.idEspecialidadPorDefecto,
+        fecha: diaGuardar,
+        hora_entrada: `${primerRango.horaInicio}:00`, 
+        hora_salida: `${primerRango.horaFin}:00`,     
+    };
 
-    alert('Agenda actualizada con éxito. ¡Horarios guardados!');
+    this._agendaService.crearAgenda(payload).subscribe({
+        next: () => {
+            this._utilService.openSnackBar(`Rango guardado con éxito.`);
+            this.aplicarFiltroFecha(this.fechaSeleccionada);
+        },
+        error: (error) => {
+            this.isLoading = false;
+            this._utilService.openSnackBar(`Falló el guardado: ${error.message}`);
+        }
+    });
   }
   
-  // Eliminar rango existente (mock)
-  eliminarRangoExistente(rango: RangoHorario): void {
-      if (confirm(`¿Está seguro que desea eliminar el rango ${rango.horaInicio} - ${rango.horaFin} del día ${rango.dia}?`)) {
-          this.agendaMock = this.agendaMock.filter(r => r.id !== rango.id);
-          this.aplicarFiltroFecha(this.fechaSeleccionada);
-          alert('Rango eliminado (simulación).');
-      }
-  }
-
-  // Eliminar rango que aún no se ha guardado
-  eliminarNuevoRango(index: number): void {
-      this.rangosNuevos.splice(index, 1);
-  }
 }

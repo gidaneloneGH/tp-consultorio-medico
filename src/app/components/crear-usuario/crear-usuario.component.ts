@@ -1,16 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ValidationErrors, AbstractControl, ValidatorFn } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
+import { UtilService } from 'src/app/services/util.service'; 
+import { RegistroService } from 'src/app/services/usuario/registro.service';
+import { Usuario } from 'src/app/interfaces/usuario';
 
-interface NuevoUsuario {
-  rol: 'administrador' | 'medico' | 'operador' | '';
-  nombre: string;
-  apellido: string;
-  dni: string;
-  email: string;
-  telefono: string;
-  // Campos de credenciales iniciales (mockeados)
-  password: string; 
-  confirmarPassword: string;
-}
+// Función de validación cruzada para verificar que las contraseñas coincidan
+export const passwordMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  const password = control.get('password');
+  const confirmarPassword = control.get('confirmarPassword');
+
+  if (!password || !confirmarPassword) {
+    return null;
+  }
+
+  // Marcar como error si están llenos pero no coinciden
+  return password.value === confirmarPassword.value ? null : { passwordMismatch: true };
+};
 
 @Component({
   selector: 'app-crear-usuario',
@@ -20,73 +26,91 @@ interface NuevoUsuario {
 export class CrearUsuarioComponent implements OnInit {
 
   rolesDisponibles: string[] = ['administrador', 'medico', 'operador'];
+  usuarioForm: FormGroup;
+  
+  private fb = inject(FormBuilder);
+  private _registroService = inject(RegistroService);
+  private _utilService = inject(UtilService);
 
-  nuevoUsuario: NuevoUsuario = {
-    rol: '',
-    nombre: '',
-    apellido: '',
-    dni: '',
-    email: '',
-    telefono: '',
-    password: '',
-    confirmarPassword: ''
-  };
-
-  constructor() { }
+  constructor() {
+    this.usuarioForm = this.fb.group({
+      rol: ['', Validators.required],
+      dni: ['', [Validators.required, Validators.pattern(/^[0-9]+$/), Validators.minLength(7)]],
+      nombre: ['', [Validators.required, Validators.minLength(3)]],
+      apellido: ['', [Validators.required, Validators.minLength(3)]],
+      fechaNacimiento: ['', Validators.required], // 💡 NUEVO CAMPO AGREGADO
+      email: ['', [Validators.required, Validators.email]],
+      telefono: ['', [Validators.required, Validators.pattern(/^[0-9 -]+$/)]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmarPassword: ['', Validators.required]
+    }, { validators: passwordMatchValidator });
+  }
 
   ngOnInit(): void {
 
   }
   
-  get formularioCompleto(): boolean {
-    const usuario = this.nuevoUsuario;
-    
-    const camposLlenos = usuario.rol !== '' &&
-                         usuario.nombre.trim().length > 0 &&
-                         usuario.apellido.trim().length > 0 &&
-                         usuario.dni.trim().length > 0 &&
-                         usuario.email.trim().length > 0 &&
-                         usuario.telefono.trim().length > 0;
-                         
-    return camposLlenos && this.passwordValida;
-  }
-  
-  get passwordValida(): boolean {
-      const { password, confirmarPassword } = this.nuevoUsuario;
-      
-      const minLength = 6;
-      return password.length >= minLength && password === confirmarPassword;
-  }
-  
   crearUsuario(): void {
-    if (!this.formularioCompleto) {
-      alert('Debe completar todos los campos y verificar las contraseñas antes de crear el usuario.');
+    if (this.usuarioForm.invalid) {
+      this._utilService.openSnackBar('Debe completar y corregir todos los campos obligatorios.');
+      this.usuarioForm.markAllAsTouched();
       return;
     }
     
-    console.log('Usuario a crear:', this.nuevoUsuario);
+    const { confirmarPassword, ...usuarioData } = this.usuarioForm.value;
 
-    const mensaje = `✅ Usuario de tipo '${this.nuevoUsuario.rol.toUpperCase()}' creado con éxito para ${this.nuevoUsuario.nombre} ${this.nuevoUsuario.apellido}.`;
+    console.log(usuarioData);
     
-    alert(mensaje); 
     
-    this.resetFormulario();
+    const fechaISO = (usuarioData.fechaNacimiento as Date).toISOString().split('T')[0];
+
+    const nuevoUsuario: Usuario = { 
+      ...usuarioData, 
+      fecha_nacimiento: fechaISO // Sobreescribimos con el formato de cadena
+    };
+
+    console.log(nuevoUsuario);
+    
+
+    this._registroService.registrarUsuario(nuevoUsuario).subscribe({
+      next: (response) => {
+        const mensaje = ` Usuario de tipo '${nuevoUsuario.rol.toUpperCase()}' creado con éxito.`;
+        this._utilService.openSnackBar(mensaje);
+        this.resetFormulario();
+      },
+      error: (err: HttpErrorResponse) => {
+        let mensajeError = 'Error desconocido al crear el usuario.';
+        
+        if (err.status === 409 && err.error?.mensaje?.includes('duplicado')) {
+          mensajeError = 'Error: El DNI o Correo Electrónico ya están registrados.';
+        } else if (err.error?.mensaje) {
+          mensajeError = `Error: ${err.error.mensaje}`;
+        }
+        
+        this._utilService.openSnackBar(mensajeError);
+        console.error('Error de registro:', err);
+      }
+    });
   }
 
   resetFormulario(): void {
-    this.nuevoUsuario = {
+    this.usuarioForm.reset({
       rol: '',
+      dni: '',
       nombre: '',
       apellido: '',
-      dni: '',
+      fechaNacimiento: '',
       email: '',
       telefono: '',
       password: '',
       confirmarPassword: ''
-    };
+    });
+    this.usuarioForm.markAsPristine();
+    this.usuarioForm.markAsUntouched();
   }
 
   cancelar(): void {
-    alert('Cancelando creación y volviendo a la lista de administración.'); 
+    this._utilService.openSnackBar('Cancelando y volviendo a la lista de administración.');
+    this.resetFormulario(); 
   }
 }

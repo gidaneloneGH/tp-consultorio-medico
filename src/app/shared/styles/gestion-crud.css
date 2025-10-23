@@ -90,6 +90,10 @@
     min-width: 100px;
 }
 
+.col-id{
+    width: 5%;
+}
+
 .asociada-tag {
     margin-left: 10px;
     background-color: #ffe0b2;

@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>Editar Turno</h2>
+
+<form [formGroup]="turnoForm" class="editar-turno-form">
+  <mat-form-field appearance="outline">
+    <mat-label>Fecha</mat-label>
+    <input matInput [matDatepicker]="picker" formControlName="fecha">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Hora</mat-label>
+    <input matInput formControlName="hora">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Nota</mat-label>
+    <textarea matInput formControlName="nota"></textarea>
+  </mat-form-field>
+
+  <div class="dialog-buttons">
+    <button mat-raised-button color="primary" (click)="guardarCambios()">Guardar</button>
+    <button mat-raised-button color="warn" (click)="cancelar()">Cancelar</button>
+  </div>
+</form>

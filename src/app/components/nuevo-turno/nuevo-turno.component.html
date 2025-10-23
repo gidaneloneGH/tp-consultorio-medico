@@ -4,31 +4,20 @@
         <p class="form-subtitulo">Completa los pasos para elegir el turno que mejor se adapte a tus necesidades.</p>
 
         <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Cobertura Médica</mat-label>
-            <input matInput [value]="coberturaUsuario" [disabled]="true">
-            <mat-icon matSuffix>verified_user</mat-icon>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
             <mat-label>Seleccionar Especialidad</mat-label>
-            <mat-select 
-                [value]="especialidadSeleccionada" 
-                (selectionChange)="seleccionarEspecialidad($event.value)"
+            <mat-select [value]="especialidadSeleccionada" (selectionChange)="seleccionarEspecialidad($event.value)"
                 placeholder="Especialidad">
                 <mat-option *ngFor="let esp of especialidades" [value]="esp">
-                    {{ esp.nombre }}
+                    {{ esp.descripcion }}
                 </mat-option>
             </mat-select>
         </mat-form-field>
 
-        <div class="paso-condicional"> 
+        <div class="paso-condicional">
             <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Seleccionar Profesional</mat-label>
-                <mat-select 
-                    [value]="profesionalSeleccionado" 
-                    (selectionChange)="seleccionarProfesional($event.value)"
-                    [disabled]="!segundoPasoHabilitado"
-                    placeholder="Profesional">
+                <mat-select [value]="profesionalSeleccionado" (selectionChange)="seleccionarProfesional($event.value)"
+                    [disabled]="!segundoPasoHabilitado" placeholder="Profesional">
                     <mat-option *ngFor="let prof of profesionalesFiltrados" [value]="prof">
                         {{ prof.nombre }}
                     </mat-option>
@@ -39,12 +28,11 @@
         <div class="paso-condicional">
             <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Seleccionar Fecha</mat-label>
-                <input matInput [matDatepicker]="picker" 
-                       (dateChange)="seleccionarFecha($event.value)"
-                       [disabled]="!tercerPasoHabilitado"
-                       placeholder="Fecha">
+                <input matInput [matDatepicker]="picker" (dateChange)="seleccionarFecha($event.value)"
+                    [disabled]="!tercerPasoHabilitado" placeholder="Fecha">
                 <mat-hint>Horarios disponibles en la fecha seleccionada</mat-hint>
-                <mat-datepicker-toggle matSuffix [for]="picker" [disabled]="!tercerPasoHabilitado"></mat-datepicker-toggle>
+                <mat-datepicker-toggle matSuffix [for]="picker"
+                    [disabled]="!tercerPasoHabilitado"></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
         </div>
@@ -52,12 +40,14 @@
         <div class="paso-condicional">
             <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Seleccionar Horario</mat-label>
-                <mat-select 
-                    [value]="horaSeleccionada"
-                    (selectionChange)="seleccionarHora($event.value)"
-                    [disabled]="!cuartoPasoHabilitado"
-                    placeholder="Hora Disponible">
-                    <mat-option *ngFor="let hora of horariosMock" [value]="hora">
+                <mat-select [value]="horaSeleccionada" (selectionChange)="seleccionarHora($event.value)"
+                    [disabled]="!cuartoPasoHabilitado" placeholder="Hora Disponible">
+
+                    <mat-option *ngIf="horasDisponibles.length === 0" [value]="null" disabled>
+                        No hay horarios disponibles en esta fecha
+                    </mat-option>
+
+                    <mat-option *ngFor="let hora of horasDisponibles" [value]="hora">
                         {{ hora.hora }}
                     </mat-option>
                 </mat-select>
@@ -67,23 +57,20 @@
         <div class="paso-condicional">
             <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Notas (Motivo del turno)</mat-label>
-                <textarea matInput placeholder="Ej: Revisión de estudios recientes..." rows="3" 
-                          [(ngModel)]="notaTurno" [disabled]="!quintoPasoHabilitado"></textarea>
+                <textarea matInput placeholder="Ej: Revisión de estudios recientes..." rows="3" [(ngModel)]="notaTurno"
+                    [disabled]="!quintoPasoHabilitado"></textarea>
                 <mat-hint>Campo obligatorio: Indica el motivo principal de la consulta.</mat-hint>
             </mat-form-field>
         </div>
 
         <div class="form-actions">
-            <button mat-raised-button 
-                    color="primary" 
-                    [disabled]="!formularioCompleto"
-                    (click)="confirmarTurno()">
+            <button mat-raised-button color="primary" [disabled]="!formularioCompleto" (click)="confirmarTurno()">
                 Aceptar (Confirmar Turno)
             </button>
             <button mat-button color="warn" (click)="cancelar()">
                 Cancelar (Volver)
             </button>
         </div>
-        
+
     </div>
 </div>

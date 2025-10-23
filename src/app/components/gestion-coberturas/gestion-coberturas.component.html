@@ -46,19 +46,19 @@
             
             <div *ngFor="let cob of coberturas" class="tabla-fila">
                 
-                <ng-container *ngIf="coberturaEditada?.id_cobertura !== cob.id_cobertura; else edicion">
+                <ng-container *ngIf="coberturaEditada?.id !== cob.id; else edicion">
                     <div class="col-nombre">
                         {{ cob.nombre }}
                         
-                        <span class="asociada-tag" *ngIf="usuariosConCobertura[cob.id_cobertura]">
-                            ({{ usuariosConCobertura[cob.id_cobertura]?.length }} asociado/s)
+                        <span class="asociada-tag" *ngIf="usuariosConCobertura[cob.id]">
+                            ({{ usuariosConCobertura[cob.id]?.length }} asociado/s)
                         </span>
                     </div>
                     <div class="col-accion">
                         <button mat-icon-button color="accent" matTooltip="Modificar Cobertura" (click)="iniciarEdicion(cob)">
                             <mat-icon>edit</mat-icon>
                         </button>
-                        <button mat-icon-button color="warn" matTooltip="Eliminar Cobertura" (click)="eliminarCobertura(cob.id_cobertura, cob.nombre)">
+                        <button mat-icon-button color="warn" matTooltip="Eliminar Cobertura" (click)="eliminarCobertura(cob.id, cob.nombre)">
                             <mat-icon>delete</mat-icon>
                         </button>
                     </div>

@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { TurnoService } from 'src/app/services/turnos/turno.service';
 
 interface Turno {
   id: number;
-  fecha: Date;
+  fecha: string;
   hora: string;
   pacienteNombre: string;
   pacienteApellido: string;
@@ -14,76 +16,85 @@ interface Turno {
 @Component({
   selector: 'app-turnos-programados',
   templateUrl: './turnos-programados.component.html',
-  styleUrls: ['./turnos-programados.component.css']
+  styleUrls: ['./turnos-programados.component.css'],
+  providers: [DatePipe]
 })
 export class TurnosProgramadosComponent implements OnInit {
 
-  fechaActual: Date = new Date();
-  fechaProxima: Date = new Date();
-  
-  turnosAgendaMock: Turno[] = [];
-  
-  fechaSeleccionada: Date = new Date();
-  turnosVisibles: Turno[] = [];
+  private _turnoService = inject(TurnoService);
+  private datePipe = inject(DatePipe);
 
-  constructor() {
-    this.fechaActual.setHours(0, 0, 0, 0);
-    this.fechaProxima.setDate(this.fechaActual.getDate() + 1);
-    this.fechaProxima.setHours(0, 0, 0, 0);
-    
-    this.mockearDatos();
-  }
+  idMedico: number = Number(localStorage.getItem('USERID'));
+  fechaSeleccionada: Date = new Date();
+
+  turnosVisibles: Turno[] = [];
+  isLoading = false;
 
   ngOnInit(): void {
-    this.aplicarFiltroFecha(this.fechaActual);
+    this.cargarTurnos(this.fechaSeleccionada);
   }
 
-  private mockearDatos(): void {
-    this.turnosAgendaMock = [
-      { id: 1, fecha: this.fechaActual, hora: '10:00', pacienteNombre: 'Ana', pacienteApellido: 'Sánchez', pacienteEdad: 35, notas: 'Revisión de estudios de laboratorio recientes.', detallesVisible: false },
-      { id: 2, fecha: this.fechaActual, hora: '15:30', pacienteNombre: 'Pedro', pacienteApellido: 'López', pacienteEdad: 58, notas: 'Consulta por dolor crónico de rodilla, trae radiografías.', detallesVisible: false },
-      { id: 3, fecha: this.fechaActual, hora: '09:00', pacienteNombre: 'Laura', pacienteApellido: 'Gómez', pacienteEdad: 22, notas: 'Continuación de tratamiento dermatológico. Cita de seguimiento.', detallesVisible: false },
-      
-      { id: 4, fecha: this.fechaProxima, hora: '11:00', pacienteNombre: 'Martín', pacienteApellido: 'Díaz', pacienteEdad: 45, notas: 'Primera consulta, chequeo general.', detallesVisible: false },
-      { id: 5, fecha: this.fechaProxima, hora: '14:00', pacienteNombre: 'Sofía', pacienteApellido: 'Ruiz', pacienteEdad: 12, notas: 'Control pediátrico de rutina.', detallesVisible: false },
-    ];
+  cargarTurnos(fecha: Date): void {
+    this.isLoading = true;
+    const fechaFormateada = this.datePipe.transform(fecha, 'yyyy-MM-dd')!;
+
+    this._turnoService.obtenerTurnosMedico(this.idMedico, fechaFormateada)
+      .subscribe({
+        next: (res) => {
+          if (res.codigo === 200 && res.payload.length > 0) {
+            this.turnosVisibles = res.payload.map((t: any) => {
+              const [apellido, nombre] = t.nombre_paciente.split(',').map((x: string) => x.trim());
+
+              const edad = this.calcularEdad(t.fecha_nacimiento);
+
+              return {
+                id: t.id_turno,
+                fecha: t.fecha,
+                hora: t.hora,
+                pacienteNombre: nombre,
+                pacienteApellido: apellido,
+                pacienteEdad: edad,
+                notas: t.nota || 'Sin notas registradas.',
+                detallesVisible: false
+              };
+            });
+          } else {
+            this.turnosVisibles = [];
+          }
+          this.isLoading = false;
+        },
+        error: (err: any) => {
+          console.error('Error al cargar turnos', err);
+          this.isLoading = false;
+        }
+      });
   }
 
-  aplicarFiltroFecha(nuevaFecha: Date | null): void {
-    if (!nuevaFecha) {
-      return;
+  calcularEdad(fechaNacimiento: string): number {
+    const hoy = new Date();
+    const nacimiento = new Date(fechaNacimiento);
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const m = hoy.getMonth() - nacimiento.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
+      edad--;
     }
-    
-    const diaSeleccionado = nuevaFecha.toLocaleDateString();
-    this.fechaSeleccionada = nuevaFecha;
-
-    let turnosFiltrados = this.turnosAgendaMock.filter(turno => 
-      turno.fecha.toLocaleDateString() === diaSeleccionado
-    );
-    
-    turnosFiltrados.sort((a, b) => {
-        const horaA = parseInt(a.hora.replace(':', ''));
-        const horaB = parseInt(b.hora.replace(':', ''));
-        return horaA - horaB;
-    });
-
-    this.turnosVisibles = turnosFiltrados;
+    return edad;
   }
-  
-  toggleNotas(turno: Turno): void {
-    this.turnosVisibles.forEach(t => {
-      if (t !== turno) {
-        t.detallesVisible = false;
-      }
-    });
-    turno.detallesVisible = !turno.detallesVisible;
-  }
-  
+
   onDateChange(event: any): void {
-      this.aplicarFiltroFecha(event.value);
+    this.fechaSeleccionada = event.value;
+    this.cargarTurnos(this.fechaSeleccionada);
   }
 
   esHoy(fecha: Date): boolean {
-    return fecha.toLocaleDateString() === this.fechaActual.toLocaleDateString();
+    return this.datePipe.transform(fecha, 'yyyy-MM-dd') ===
+           this.datePipe.transform(new Date(), 'yyyy-MM-dd');
+  }
+
+  toggleNotas(turno: Turno): void {
+    this.turnosVisibles.forEach(t => {
+      if (t !== turno) t.detallesVisible = false;
+    });
+    turno.detallesVisible = !turno.detallesVisible;
   }
 }

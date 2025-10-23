@@ -27,7 +27,7 @@ const routes: Routes = [
   { path: 'datos-personales', component: DatosPersonalesComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.PACIENTE] }},
   { path: 'administracion-usuarios', component: AdministracionUsuariosComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.ADMIN] }},
   { path: 'crear-usuario', component: CrearUsuarioComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.ADMIN] }},
-  { path: 'editar-usuario', component: EditarUsuarioComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.ADMIN] }},
+  { path: 'editar-usuario/:id', component: EditarUsuarioComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.ADMIN] }},
   { path: 'inicio-medico', component: InicioMedicoComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.MEDICO] }},
   { path: 'turnos-programados', component: TurnosProgramadosComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.MEDICO] }},
   { path: 'gestion-agenda', component: GestionAgendaComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.MEDICO] }},
@@ -39,6 +39,8 @@ const routes: Routes = [
   {path: '**', redirectTo: 'menu', pathMatch: 'full'}
 
 ];
+
+
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

@@ -1,16 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-
-interface Usuario {
-  id: number;
-  nombre: string;
-  apellido: string;
-  rol: 'administrador' | 'medico' | 'operador' | 'paciente';
-  dni: string;
-  email: string;
-  telefono: string;
-  cobertura?: string; // Solo para pacientes, pero lo dejamos opcional
-}
-
+import { Component, OnInit, inject } from '@angular/core';
+import { Usuario } from 'src/app/interfaces/usuario'; // Importamos la interfaz Usuario
+import { UtilService } from 'src/app/services/util.service'; // Servicio de Utilidades
+import { HttpErrorResponse } from '@angular/common/http';
+import { UsuarioService } from 'src/app/services/usuario/usuario.service';
 @Component({
   selector: 'app-administracion-usuarios',
   templateUrl: './administracion-usuarios.component.html',
@@ -18,55 +10,67 @@ interface Usuario {
 })
 export class AdministracionUsuariosComponent implements OnInit {
 
-  usuariosMock: Usuario[] = [
-    { id: 1, nombre: 'Ana', apellido: 'Gómez', rol: 'administrador', dni: '10123456', email: 'ana.gomez@clinica.com', telefono: '1122334455' },
-    { id: 2, nombre: 'Carlos', apellido: 'Pérez', rol: 'medico', dni: '15987654', email: 'carlos.perez@clinica.com', telefono: '1133445566' },
-    { id: 3, nombre: 'Luisa', apellido: 'Díaz', rol: 'operador', dni: '20345678', email: 'luisa.diaz@clinica.com', telefono: '1144556677' },
-    { id: 4, nombre: 'Roberto', apellido: 'Silva', rol: 'paciente', dni: '25456789', email: 'roberto.silva@mail.com', telefono: '1155667788', cobertura: 'OSDE 210' },
-    { id: 5, nombre: 'Elena', apellido: 'Fernández', rol: 'medico', dni: '28678901', email: 'elena.f@clinica.com', telefono: '1166778899' },
-    { id: 6, nombre: 'Pablo', apellido: 'López', rol: 'operador', dni: '35789012', email: 'pablo.lopez@clinica.com', telefono: '1177889900' },
-  ];
+  private _usuarioService = inject(UsuarioService);
+  private _utilService = inject(UtilService);
 
+  usuarios: Usuario[] = [];
   usuariosFiltrados: Usuario[] = [];
 
-  filtroNombreApellido: string = '';
-  filtroRol: string = ''; // Puede ser 'administrador', 'medico', 'operador', 'paciente' o '' para todos
+  isLoading: boolean = true;
+  error: string | null = null;
 
-  rolesDisponibles: string[] = ['Todos', 'administrador', 'medico', 'operador', 'paciente'];
+  filtroNombreApellido: string = '';
+  filtroRol: string = ''; 
+
+  rolesDisponibles: string[] = ['Todos', 'admin', 'medico', 'operador', 'paciente'];
 
   constructor() { }
 
   ngOnInit(): void {
-    this.aplicarFiltros();
+    this.obtenerUsuarios();
+  }
+
+  obtenerUsuarios(): void {
+    this.isLoading = true;
+    this.error = null;
+
+    this._usuarioService.obtenerUsuarios().subscribe({
+      next: (data) => {
+        console.log("data", data);
+        
+        this.usuarios = data;
+        this.aplicarFiltros();
+        this.isLoading = false;
+      },
+      error: (err: HttpErrorResponse) => {
+        this.isLoading = false;
+        const mensajeError = err.error?.mensaje || 'Error al cargar los usuarios. Intente más tarde.';
+        this.error = mensajeError;
+        this._utilService.openSnackBar(`${mensajeError}`);
+        console.error('Error al obtener usuarios:', err);
+      }
+    });
   }
 
   aplicarFiltros(): void {
-    let tempUsuarios = this.usuariosMock;
+  const termino = (this.filtroNombreApellido || '').toLowerCase().trim();
+  const rolFiltro = (this.filtroRol || '').toLowerCase(); // '' = todos
 
-    if (this.filtroNombreApellido) {
-      const termino = this.filtroNombreApellido.toLowerCase().trim();
-      tempUsuarios = tempUsuarios.filter(u =>
-        u.nombre.toLowerCase().includes(termino) ||
-        u.apellido.toLowerCase().includes(termino)
-      );
-    }
+  this.usuariosFiltrados = this.usuarios.filter(u => {
+    const nombre = (u.nombre || '').toLowerCase();
+    const apellido = (u.apellido || '').toLowerCase();
+    const correo = (u.email || '').toLowerCase();
+    const rol = (u.rol || '').toLowerCase();
 
-    if (this.filtroRol && this.filtroRol !== 'Todos') {
-      tempUsuarios = tempUsuarios.filter(u => u.rol === this.filtroRol);
-    }
+    const coincideNombre = termino ? (nombre.includes(termino) || apellido.includes(termino) || correo.includes(termino)) : true;
 
-    this.usuariosFiltrados = tempUsuarios;
-  }
-  
-  editarUsuario(usuario: Usuario): void {
-    console.log(`Simulando la edición del usuario con ID: ${usuario.id}`);
-    alert(`Preparando para editar a ${usuario.nombre} ${usuario.apellido}.`);
-  }
-  
-  agregarUsuario(): void {
-    console.log('Simulando la navegación a la pantalla de creación de usuario.');
-    alert('Abriendo formulario para agregar un nuevo usuario.');
-  }
+    const coincideRol = rolFiltro ? rol === rolFiltro : true;
+
+    return coincideNombre && coincideRol;
+  });
+}
+
+
 
   capitalizarRol(rol: string): string {
     return rol.charAt(0).toUpperCase() + rol.slice(1);

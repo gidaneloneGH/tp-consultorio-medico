@@ -1,13 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { CoberturaService } from 'src/app/services/coberturas/cobertura.service';
 import { RegistroService } from 'src/app/services/usuario/registro.service';
 import { UtilService } from 'src/app/services/util.service';
-
-interface Cobertura {
-  id: number;
-  nombre: string;
-}
+import { Cobertura } from 'src/app/interfaces/cobertura';
 
 @Component({
   selector: 'app-registro-dialog',
@@ -23,16 +20,15 @@ export class RegistroDialogComponent implements OnInit {
     private dialogRef: MatDialogRef<RegistroDialogComponent>,
     private fb: FormBuilder,
     private _utilService: UtilService,
-    private _registroService: RegistroService
+    private _registroService: RegistroService,
+    private _coberturaService: CoberturaService
   ) {}
 
   ngOnInit() {
-    this.coberturas = [
-      { id: 1, nombre: 'OSDE' },
-      { id: 2, nombre: 'Swiss Medical' },
-      { id: 3, nombre: 'Galeno' },
-      { id: 4, nombre: 'Medicus' }
-    ];
+    this._coberturaService.getCoberturas().subscribe((data: Cobertura[]) =>{
+      this.coberturas = data;
+      console.log(this.coberturas);
+    })
 
     this.formularioRegistro = this.fb.group({
       nombre: ['', Validators.required],
@@ -95,4 +91,6 @@ export class RegistroDialogComponent implements OnInit {
   onCancel() {
     this.dialogRef.close();
   }
+
+  
 }

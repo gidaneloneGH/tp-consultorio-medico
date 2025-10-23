@@ -1,82 +1,129 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms'; // Importamos FormControl
+import { HttpErrorResponse } from '@angular/common/http';
 
-interface Especialidad {
-  id: number;
-  nombre: string;
-}
+import { Especialidad } from 'src/app/interfaces/especialidad'; 
+import { UtilService } from 'src/app/services/util.service';
+import { EspecialidadService } from 'src/app/services/especialidad/especialidad.service';
 
 @Component({
   selector: 'app-gestion-especialidades',
   templateUrl: './gestion-especialidades.component.html',
-  styleUrls: ['./gestion-especialidades.component.css'] // Reutilizando estilos
+  styleUrls: ['./gestion-especialidades.component.css']
 })
 export class GestionEspecialidadesComponent implements OnInit {
 
-  especialidades: Especialidad[] = [
-    { id: 10, nombre: 'Cardiología' },
-    { id: 20, nombre: 'Traumatología' },
-    { id: 30, nombre: 'Pediatría' },
-    { id: 40, nombre: 'Dermatología' },
-  ];
-  
-  medicosConEspecialidad: { [key: number]: number[] } = {
-    40: [201, 205], 
-    10: [202],
-  };
-
-  nuevaEspecialidadNombre: string = '';
+  especialidades: Especialidad[] = []; 
+  altaForm: FormGroup;
+  edicionControl: FormControl;
   especialidadEditada: Especialidad | null = null;
+  errorMessage: string | null = null; 
+  medicosConEspecialidadCount: { [key: number]: number } = {}; 
+  
+  private fb = inject(FormBuilder);
+  private _especialidadService = inject(EspecialidadService);
+  private _utilService = inject(UtilService);
 
-  constructor() { }
+  constructor() {
+    this.altaForm = this.fb.group({
+      descripcion: ['', [Validators.required, Validators.minLength(3)]]
+    });
+    
+    this.edicionControl = new FormControl('', [Validators.required, Validators.minLength(3)]);
+  }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.cargarEspecialidades();
+  }
 
   crearEspecialidad(): void {
-    if (this.nuevaEspecialidadNombre.trim() === '') {
-      alert('El nombre de la especialidad no puede estar vacío.');
-      return;
-    }
-    
-    const nuevaId = Math.max(...this.especialidades.map(e => e.id)) + 10;
-    this.especialidades.push({ id: nuevaId, nombre: this.nuevaEspecialidadNombre.trim() });
-    this.nuevaEspecialidadNombre = '';
-    alert('Especialidad creada con éxito.');
-  }
+    if (this.altaForm.invalid) return;
 
+    const nombre = this.altaForm.value.descripcion;
+
+    this._especialidadService.crearEspecialidad(nombre).subscribe({
+      next: () => {
+        this._utilService.openSnackBar('Especialidad creada con éxito.');
+        this.altaForm.reset({ nombre: '' }); // Resetear solo el formulario de alta
+        this.cargarEspecialidades(); 
+      },
+      error: (err: HttpErrorResponse) => {
+        this._utilService.openSnackBar(`Error al crear: ${err.error?.mensaje || 'Error desconocido.'}`);
+        console.error(err);
+      }
+    });
+  }
+  
+  guardarEdicion(): void {
+    if (!this.especialidadEditada || this.edicionControl.invalid) return;
+    
+    const nuevoNombre = this.edicionControl.value;
+
+    const especialidadActualizada: Especialidad = {
+        id: this.especialidadEditada.id,
+        descripcion: nuevoNombre
+    };
+
+    this._especialidadService.modificarEspecialidad(especialidadActualizada).subscribe({
+      next: () => {
+        this._utilService.openSnackBar('Especialidad modificada con éxito.');
+        this.cancelarEdicion();
+        this.cargarEspecialidades(); 
+      },
+      error: (err: HttpErrorResponse) => {
+        this._utilService.openSnackBar(`Error al modificar: ${err.error?.mensaje || 'Error desconocido.'}`);
+        console.error(err);
+      }
+    });
+  }
+  
   iniciarEdicion(especialidad: Especialidad): void {
     this.especialidadEditada = { ...especialidad }; 
-  }
-
-  guardarEdicion(): void {
-    if (!this.especialidadEditada || this.especialidadEditada.nombre.trim() === '') {
-      alert('El nombre de la especialidad no puede estar vacío.');
-      return;
-    }
-    
-    const index = this.especialidades.findIndex(e => e.id === this.especialidadEditada!.id);
-    if (index !== -1) {
-      this.especialidades[index].nombre = this.especialidadEditada.nombre.trim();
-      alert('Especialidad modificada con éxito.');
-    }
-    this.especialidadEditada = null; 
-  }
-
-  eliminarEspecialidad(especialidadId: number, especialidadNombre: string): void {
-    
-    const tieneAsociaciones = this.medicosConEspecialidad[especialidadId]?.length > 0;
-    
-    if (tieneAsociaciones) {
-      alert(`ERROR: La especialidad "${especialidadNombre}" no puede ser eliminada porque ${this.medicosConEspecialidad[especialidadId].length} médico(s) la tienen asociada.`);
-      return;
-    }
-
-    if (confirm(`¿Está seguro que desea eliminar la especialidad: "${especialidadNombre}"?`)) {
-      this.especialidades = this.especialidades.filter(e => e.id !== especialidadId);
-      alert('Especialidad eliminada con éxito.');
-    }
+    this.edicionControl.setValue(especialidad.descripcion);
+    this.edicionControl.markAsUntouched();
+    this.edicionControl.markAsPristine();
   }
 
   cancelarEdicion(): void {
     this.especialidadEditada = null;
+    this.edicionControl.reset();
   }
+
+  cargarEspecialidades(): void {
+    this.errorMessage = null;
+    this._especialidadService.getEspecialidades().subscribe({
+      next: (data: Especialidad[]) => {
+        this.especialidades = data.map(e => ({
+            id: (e as any).id_especialidad || e.id,
+            descripcion: e.descripcion
+        }));
+        this.medicosConEspecialidadCount = { 40: 2, 10: 1, 30: 0 }; 
+      },
+      error: (err) => {
+        this.errorMessage = 'No se pudieron cargar las especialidades. Verifique la conexión con el servidor.';
+        this._utilService.openSnackBar(' Error al cargar especialidades.');
+        console.error('Error de API al cargar especialidades', err);
+      }
+    });
+  }
+
+  eliminarEspecialidad(especialidad: Especialidad): void {
+    if (confirm(`¿Está seguro que desea eliminar la especialidad: "${especialidad.descripcion}"?`)) {
+      this._especialidadService.eliminarEspecialidad(especialidad.id).subscribe({
+        next: () => {
+          this._utilService.openSnackBar('Especialidad eliminada con éxito.');
+          this.cargarEspecialidades();
+        },
+        error: (err: HttpErrorResponse) => {
+          if (err.status === 409) { 
+             this._utilService.openSnackBar(`ERROR: No se puede eliminar "${especialidad.descripcion}". Está asociada a médicos.`);
+          } else {
+             this._utilService.openSnackBar('Error al intentar eliminar la especialidad.');
+          }
+          console.error(err);
+        }
+      });
+    }
+  }
+
 }

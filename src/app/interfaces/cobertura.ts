@@ -1,4 +1,4 @@
 export interface Cobertura {
-  id_cobertura: number; 
+  id: number; 
   nombre: string;
 }

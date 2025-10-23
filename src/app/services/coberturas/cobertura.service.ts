@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { Cobertura } from 'src/app/interfaces/cobertura';
@@ -18,7 +18,7 @@ export class CoberturaService {
 
   constructor(private http: HttpClient) { }
 
-  getTodasCoberturas(): Observable<Cobertura[]> {
+  getCoberturas(): Observable<Cobertura[]> {
     const endpoint = "/obtenerCoberturas"
     const url = this.api + endpoint
 
@@ -45,16 +45,56 @@ export class CoberturaService {
 
     return this.http.post<respuestaApi<any>>(url, data).pipe(
         map(response => {
-            if (response.codigo === 200 && response.payload && response.payload[0]) {
-                const nuevoId = response.payload[0].id_cobertura;
-                return { id_cobertura: nuevoId, nombre: nombre } as Cobertura;
-            } else {
-                throw new Error(response.mensaje || 'Error desconocido al crear cobertura.');
-            }
+          if (response.codigo === 200 && response.payload && response.payload[0]) {
+            const nuevoId = response.payload[0].id_cobertura;
+            return { id: nuevoId, nombre: nombre } as Cobertura;
+          } else {
+            throw new Error(response.mensaje || 'Error desconocido al crear cobertura.');
+          }
         }),
         catchError(error => {
-            console.error('Error en el servicio:', error);
-            return throwError(() => new Error('Fallo la conexión o la api: ' + (error.message || error.statusText)));
+          console.error('Error en el servicio:', error);
+          return throwError(() => new Error('Fallo la conexión o la api: ' + (error.message || error.statusText)));
+        })
+    );
+  }
+
+  modificarCobertura(cobertura: Cobertura): Observable<Cobertura> {
+    const endpoint = "/modificarCobertura"
+    const url = this.api + endpoint
+    
+    return this.http.put<respuestaApi<Cobertura>>(url, cobertura).pipe(
+        map(response => {
+          if (response.codigo === 200) {
+            return cobertura;
+          } else {
+            throw new Error(response.mensaje || 'Error desconocido al modificar cobertura.');
+          }
+        }),
+        catchError(error => {
+          console.error('Error en el servicio:', error);
+          return throwError(() => new Error('Error al modificar.'));
+        })
+    );
+  }
+
+  eliminarCobertura(id: number): Observable<Cobertura> {
+    const endpoint = "/eliminarCobertura"
+    const url = `${this.api}${endpoint}/${id}`
+
+    return this.http.delete<respuestaApi<Cobertura>>(url).pipe(
+        map(response => {
+            if (response && response.codigo === 200) {
+              return response.payload;
+            } else if(response.codigo === -2){
+              throw new Error(response.mensaje);
+            } else {
+              throw new Error(response.mensaje || 'Error desconocido al eliminar cobertura.');
+            }
+        }),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error en el servicio DELETE:', error);
+          return throwError(() => new Error(error.error.mensaje));
         })
     );
   }

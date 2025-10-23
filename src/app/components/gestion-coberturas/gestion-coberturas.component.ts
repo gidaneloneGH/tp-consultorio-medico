@@ -3,6 +3,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms'; // Nuevas importaciones para Reactive Forms
 import { Cobertura } from 'src/app/interfaces/cobertura';
 import { CoberturaService } from 'src/app/services/coberturas/cobertura.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { UtilService } from 'src/app/services/util.service';
 
 @Component({
   selector: 'app-gestion-coberturas',
@@ -23,7 +25,9 @@ export class GestionCoberturasComponent implements OnInit {
 
   constructor(
     private coberturasService: CoberturaService,
-    private fb: FormBuilder // Inyectar FormBuilder
+    private fb: FormBuilder,
+    private _authService: AuthService,
+    private _utilService: UtilService
   ) {
     this.altaForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]]
@@ -32,10 +36,13 @@ export class GestionCoberturasComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarCoberturas();
+
+    console.log(this._authService.getToken());
+    
   }
 
   cargarCoberturas(): void {
-    this.coberturasService.getTodasCoberturas().subscribe({
+    this.coberturasService.getCoberturas().subscribe({
       next: (data: Cobertura[]) => {
         this.coberturas = data;
         this.errorMessage = '';
@@ -57,12 +64,12 @@ export class GestionCoberturasComponent implements OnInit {
     
     this.coberturasService.crearCobertura(nuevoNombre.trim()).subscribe({
       next: () => {
-        alert('Cobertura creada con éxito.');
+        this._utilService.openSnackBar('Cobertura creada con éxito.');
         this.altaForm.reset;
         this.cargarCoberturas(); 
       },
       error: (err: Error) => {
-        alert('Error al crear la cobertura: ' + err.message);
+        this._utilService.openSnackBar('Error al crear la cobertura: ' + err.message);
         console.error(err);
       }
     });
@@ -77,50 +84,46 @@ export class GestionCoberturasComponent implements OnInit {
   }
 
   guardarEdicion(): void {
-    // if (this.edicionControl.invalid || !this.coberturaEditada) {
-    //   this.edicionControl.markAsTouched();
-    //   return;
-    // }
+    if (this.edicionControl.invalid || !this.coberturaEditada) {
+      this.edicionControl.markAsTouched();
+      return;
+    }
     
-    // const coberturaActualizada: Cobertura = {
-    //     ...this.coberturaEditada,
-    //     nombre: this.edicionControl.value.trim()
-    // };
+    const coberturaActualizada: Cobertura = {
+        id: this.coberturaEditada.id,
+        nombre: this.edicionControl.value
+    };
+
+    console.log(coberturaActualizada);
     
-    // this.coberturasService.modificarCobertura(coberturaActualizada).subscribe({
-    //   next: () => {
-    //     alert('Cobertura modificada con éxito.');
-    //     this.coberturaEditada = null;
-    //     this.cargarCoberturas();
-    //   },
-    //   error: (err: Error) => {
-    //     alert('Error al modificar la cobertura.');
-    //     console.error(err);
-    //   }
-    // });
-    console.log("cobertura editada");
     
+    this.coberturasService.modificarCobertura(coberturaActualizada).subscribe({
+      next: () => {
+        this._utilService.openSnackBar('Cobertura modificada con éxito.');
+        this.coberturaEditada = null;
+        this.cargarCoberturas();
+      },
+      error: (err: Error) => {
+        this._utilService.openSnackBar('Error al modificar la cobertura.' + err.message);
+        console.error(err);
+      }
+    });    
   }
 
   eliminarCobertura(coberturaId: number, coberturaNombre: string): void {
       
-    // if (!confirm(`¿Está seguro que desea eliminar la cobertura: "${coberturaNombre}"?`)) return;
+    if (!confirm(`¿Está seguro que desea eliminar la cobertura: "${coberturaNombre}"?`)) return;
 
-    // this.coberturasService.eliminarCobertura(coberturaId).subscribe({
-    //   next: () => {
-    //     alert('Cobertura eliminada con éxito.');
-    //     this.cargarCoberturas();
-    //   },
-    //   error: (err: HttpErrorResponse) => {
-    //     // Asume 409 Conflict si está asociado
-    //     if (err.status === 409) { 
-    //        alert(`ERROR: No se puede eliminar "${coberturaNombre}". La cobertura está asociada a uno o más usuarios.`);
-    //     } else {
-    //        alert('Error al intentar eliminar la cobertura. Código: ' + err.status);
-    //     }
-    //     console.error(err);
-    //   }
-    // });
+    this.coberturasService.eliminarCobertura(coberturaId).subscribe({
+      next: () => {
+        this._utilService.openSnackBar('Cobertura eliminada con éxito.');
+        this.cargarCoberturas();
+      },
+      error: (err: Error) => {
+        this._utilService.openSnackBar(err.message)
+        console.error(err);
+      }
+    });
   }
 
   cancelarEdicion(): void {

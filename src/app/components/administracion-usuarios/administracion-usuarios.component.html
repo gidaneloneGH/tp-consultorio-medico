@@ -24,7 +24,7 @@
                 </mat-select>
             </mat-form-field>
             
-            <button mat-mini-fab color="primary" class="agregar-btn" matTooltip="Agregar Nuevo Usuario" (click)="agregarUsuario()">
+            <button mat-mini-fab color="primary" class="agregar-btn" matTooltip="Agregar Nuevo Usuario" [routerLink]="'/crear-usuario'">
                 <mat-icon>add</mat-icon>
             </button>
         </div>
@@ -50,7 +50,7 @@
                     <span class="rol-tag" [ngClass]="usuario.rol">{{ capitalizarRol(usuario.rol) }}</span>
                 </div>
                 <div class="col-accion">
-                    <button mat-icon-button color="accent" matTooltip="Editar Usuario" (click)="editarUsuario(usuario)">
+                    <button mat-icon-button color="accent" matTooltip="Editar Usuario" [routerLink]="['/editar-usuario', usuario.id]">
                         <mat-icon>edit</mat-icon>
                     </button>
                 </div>

@@ -21,7 +21,7 @@ import {MatSelectModule} from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { CdkVirtualScrollableElement } from "@angular/cdk/scrolling";
 import { A11yModule } from "@angular/cdk/a11y";
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { PacienteRegistradoComponent } from './components/paciente-registrado/paciente-registrado.component';
 import { NuevoTurnoComponent } from './components/nuevo-turno/nuevo-turno.component';
@@ -37,6 +37,8 @@ import { InicioOperadorComponent } from './components/inicio-operador/inicio-ope
 import { InicioAdminComponent } from './components/inicio-admin/inicio-admin.component';
 import { GestionCoberturasComponent } from './components/gestion-coberturas/gestion-coberturas.component';
 import { GestionEspecialidadesComponent } from './components/gestion-especialidades/gestion-especialidades.component';
+import { AuthInterceptor } from './auth.interceptor';
+import { EditarTurnoComponent } from './shared/dialogs/editar-turno/editar-turno.component';
 
 
 @NgModule({
@@ -59,7 +61,8 @@ import { GestionEspecialidadesComponent } from './components/gestion-especialida
     InicioOperadorComponent,
     InicioAdminComponent,
     GestionCoberturasComponent,
-    GestionEspecialidadesComponent
+    GestionEspecialidadesComponent,
+    EditarTurnoComponent
   ],
   imports: [
     BrowserModule,
@@ -83,7 +86,13 @@ import { GestionEspecialidadesComponent } from './components/gestion-especialida
     MatDatepickerModule,
     MatNativeDateModule
 ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

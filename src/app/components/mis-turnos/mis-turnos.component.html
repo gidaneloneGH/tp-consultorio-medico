@@ -42,8 +42,8 @@
                     </p>
 
                     <div class="action-buttons">
-                         <button mat-flat-button color="accent" *ngIf="turno.fecha.getTime() >= date.now()">Modificar</button>
-                         <button mat-flat-button color="warn" *ngIf="turno.fecha.getTime() >= date.now()">Cancelar Turno</button>
+                         <button mat-flat-button color="accent" *ngIf="turno.fecha.getTime() >= date.now()" (click)="editarTurno(turno)">Modificar</button>
+                         <button mat-flat-button color="warn" *ngIf="turno.fecha.getTime() >= date.now()" (click)="eliminarTurno(turno)">Cancelar Turno</button>
                          <span class="turno-pasado-tag" *ngIf="turno.fecha.getTime() < (date.now() - 86400000)">Turno Pasado</span>
                     </div>
 
