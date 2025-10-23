@@ -1,136 +1,140 @@
-import { Component, OnInit } from '@angular/core';
+// inicio-operador.component.ts
+import { Component, OnInit, inject } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { MatTableDataSource } from '@angular/material/table';
+import { forkJoin, of, switchMap, map } from 'rxjs';
+import { UsuarioService } from 'src/app/services/usuario/usuario.service';
+import { TurnoService } from 'src/app/services/turnos/turno.service';
+import { respuestaApi } from 'src/app/services/coberturas/cobertura.service';
+import { Especialidad } from 'src/app/interfaces/especialidad';
+import { Usuario } from 'src/app/interfaces/usuario';
+import { AgendaService } from 'src/app/services/agenda/agenda.service';
+import { EspecialidadService } from 'src/app/services/especialidad/especialidad.service';
 
-// Interfaz para los rangos de horario individuales de un médico
-interface RangoHorario {
-  horaInicio: string; // HH:MM
-  horaFin: string; // HH:MM
-}
-
-// Interfaz que resume la disponibilidad de un médico para un día
 interface AgendaMedicoDia {
-  id: number;
-  nombreMedico: string;
-  apellidoMedico: string;
+  medico: string;
   especialidad: string;
-  horarios: RangoHorario[]; // Lista de rangos cargados para el día
-  horarioAtencionString: string; // Ej: "08:00 a 12:00, 14:00 a 18:00"
+  horario: string;
+  id_medico: number;
+  fecha: string;
 }
 
 @Component({
   selector: 'app-inicio-operador',
   templateUrl: './inicio-operador.component.html',
-  styleUrls: ['./inicio-operador.component.css']
+  styleUrls: ['./inicio-operador.component.css'],
 })
 export class InicioOperadorComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private usuarioService = inject(UsuarioService);
+  private turnoService = inject(TurnoService);
+  private dialog = inject(MatDialog);
+  private agendaService = inject(AgendaService);
+  private especialidadService = inject(EspecialidadService);
 
-  // Variables de control
-  fechaSeleccionada: Date = new Date(); 
-  
-  agendaMedicosVisible: AgendaMedicoDia[] = []; 
-
-  agendasMockDB = [
-    { 
-      id: 1, 
-      nombreMedico: 'Carlos', 
-      apellidoMedico: 'Pérez', 
-      especialidad: 'Cardiología', 
-      dias: {
-        [this.formatFecha(new Date())]: [{ horaInicio: '08:00', horaFin: '12:00' }, { horaInicio: '15:00', horaFin: '19:00' }],
-        [this.formatFecha(this.getNextDay())]: [{ horaInicio: '09:00', horaFin: '17:00' }]
-      }
-    },
-    { 
-      id: 2, 
-      nombreMedico: 'Elena', 
-      apellidoMedico: 'Fernández', 
-      especialidad: 'Traumatología', 
-      dias: {
-        [this.formatFecha(new Date())]: [{ horaInicio: '10:00', horaFin: '14:00' }],
-        [this.formatFecha(this.getPreviousDay())]: [{ horaInicio: '08:00', horaFin: '16:00' }]
-      }
-    },
-    { 
-      id: 3, 
-      nombreMedico: 'Roberto', 
-      apellidoMedico: 'García', 
-      especialidad: 'Pediatría', 
-      dias: {
-        [this.formatFecha(new Date())]: [{ horaInicio: '14:00', horaFin: '18:00' }],
-      }
-    }
-  ];
-
-  constructor() { }
+  filtroFechaForm!: FormGroup;
+  dataSource = new MatTableDataSource<AgendaMedicoDia>([]);
+  displayedColumns = ['medico', 'especialidad', 'horario', 'acciones'];
 
   ngOnInit(): void {
-    this.aplicarFiltroFecha(this.fechaSeleccionada);
+    const hoy = new Date();
+    this.filtroFechaForm = this.fb.group({ fecha: [hoy] });
+    this.cargarAgendasDelDia();
   }
 
-  private getNextDay(): Date {
-      const nextDay = new Date();
-      nextDay.setDate(nextDay.getDate() + 1);
-      return nextDay;
-  }
-  
-  private getPreviousDay(): Date {
-      const prevDay = new Date();
-      prevDay.setDate(prevDay.getDate() - 1);
-      return prevDay;
-  }
-  
-  private formatFecha(date: Date): string {
-    const d = new Date(date);
-    let month = '' + (d.getMonth() + 1);
-    let day = '' + d.getDate();
-    const year = d.getFullYear();
-
-    if (month.length < 2) month = '0' + month;
-    if (day.length < 2) day = '0' + day;
-
-    return [year, month, day].join('-');
+  cambiarFecha(): void {
+    this.cargarAgendasDelDia();
   }
 
-  esHoy(fecha: Date): boolean {
-    return this.formatFecha(fecha) === this.formatFecha(new Date());
-  }
+  cargarAgendasDelDia(): void {
+    const fechaSeleccionada: Date = this.filtroFechaForm.value.fecha;
+    const fechaFormateada = fechaSeleccionada.toISOString().split('T')[0];
 
-  onDateChange(event: any): void {
-      this.aplicarFiltroFecha(event.value);
-  }
+    this.dataSource.data = [];
 
-  aplicarFiltroFecha(nuevaFecha: Date | null): void {
-    if (!nuevaFecha) return;
+    this.usuarioService.obtenerUsuarios().subscribe({
+      next: (usuarios: Usuario[]) => {
+        const medicos = usuarios.filter((u) => u.rol === 'medico');
 
-    this.fechaSeleccionada = nuevaFecha;
-    const diaString = this.formatFecha(nuevaFecha);
-    this.agendaMedicosVisible = [];
+        if (!medicos.length) return;
 
-    for (const medicoAgenda of this.agendasMockDB) {
-      const horariosDelDia = medicoAgenda.dias[diaString];
-      
-      if (horariosDelDia && horariosDelDia.length > 0) {
-        
-        const horarioString = horariosDelDia.map(h => `${h.horaInicio} a ${h.horaFin}`).join(', ');
-        
-        this.agendaMedicosVisible.push({
-          id: medicoAgenda.id,
-          nombreMedico: medicoAgenda.nombreMedico,
-          apellidoMedico: medicoAgenda.apellidoMedico,
-          especialidad: medicoAgenda.especialidad,
-          horarios: horariosDelDia,
-          horarioAtencionString: horarioString,
+        const requests = medicos.map((medico) =>
+          this.agendaService.obtenerAgendaPorDia(medico.id!).pipe(
+            switchMap((resAgenda: any) => {
+              console.log(resAgenda);
+              
+              const agendasDelDia = resAgenda.filter(
+                (a: any) =>
+                  a.fecha &&
+                  new Date(a.fecha).toISOString().split('T')[0] === fechaFormateada
+              );
+
+              if (!agendasDelDia.length) return of([]);
+
+              return this.especialidadService.getEspecialidadesPorMedico(medico.id!).pipe(
+                map((resEsp: respuestaApi<Especialidad[]>) => {
+                  console.log(resEsp);
+                  
+                  const especialidadMedico =
+                    resEsp.payload.length > 0
+                      ? resEsp.payload.map((e) => e.descripcion).join(', ')
+                      : '—';
+
+                  return agendasDelDia.map((agenda: any) => ({
+                    medico: `${medico.apellido}, ${medico.nombre}`,
+                    especialidad: especialidadMedico,
+                    horario: `${agenda.hora_entrada} - ${agenda.hora_salida}`,
+                    id_medico: medico.id,
+                    fecha: fechaFormateada,
+                  }));
+                })
+              );
+            })
+          )
+        );
+
+        forkJoin(requests).subscribe({
+          next: (resultados) => {
+            const agendasPlanificadas = resultados.flat();
+            this.dataSource.data = agendasPlanificadas;
+          },
+          error: (err) => {
+            console.error('Error al obtener agendas', err);
+            this.dataSource.data = [];
+          },
         });
-      }
-    }
-  }
-
-  editarAgenda(medico: AgendaMedicoDia): void {
-    alert(`EDITAR: Simulando la edición de la agenda del Dr/a. ${medico.apellidoMedico} para el día ${this.formatFecha(this.fechaSeleccionada)}. Esto llevaría a una pantalla similar a la que tiene el médico.`);
-    console.log('Médico a editar:', medico);
+      },
+      error: (err) => {
+        console.error('Error al obtener usuarios', err);
+      },
+    });
   }
 
   verTurnos(medico: AgendaMedicoDia): void {
-    alert(`VER TURNOS: Mostrando los turnos confirmados del Dr/a. ${medico.apellidoMedico} para el día ${this.formatFecha(this.fechaSeleccionada)}. Aquí se listaría la hora, paciente y motivo.`);
-    console.log('Médico a visualizar turnos:', medico);
+    // this.turnoService.obtenerTurnosMedico(medico.id_medico, medico.fecha).subscribe({
+    //   next: (res: respuestaApi<Turno[]>) => {
+    //     this.dialog.open(VerTurnosDialogComponent, {
+    //       width: '800px',
+    //       data: { medico: medico.medico, fecha: medico.fecha, turnos: res.payload || [] },
+    //     });
+    //   },
+    //   error: (err) => console.error('Error al cargar turnos:', err),
+    // });
+  }
+
+  editarAgenda(medico: AgendaMedicoDia): void {
+    // this.dialog
+    //   .open(EditarAgendaComponent, {
+    //     width: '900px',
+    //     maxHeight: '90vh',
+    //     panelClass: 'editar-agenda-dialog-panel',
+    //     autoFocus: false,
+    //     data: { id_medico: medico.id_medico, nombre_medico: medico.medico, fecha: medico.fecha },
+    //   })
+    //   .afterClosed()
+    //   .subscribe((actualizado) => {
+    //     if (actualizado) this.cargarAgendasDelDia();
+    //   });
   }
 }

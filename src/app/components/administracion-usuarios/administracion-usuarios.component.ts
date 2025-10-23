@@ -54,7 +54,7 @@ export class AdministracionUsuariosComponent implements OnInit {
 
   aplicarFiltros(): void {
   const termino = (this.filtroNombreApellido || '').toLowerCase().trim();
-  const rolFiltro = (this.filtroRol || '').toLowerCase(); // '' = todos
+  const rolFiltro = (this.filtroRol || '').toLowerCase();
 
   this.usuariosFiltrados = this.usuarios.filter(u => {
     const nombre = (u.nombre || '').toLowerCase();

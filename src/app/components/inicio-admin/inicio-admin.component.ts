@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class InicioAdminComponent implements OnInit {
   
-  admin: string = 'Sr/a. Pérez';
+  admin: string = localStorage.getItem('USERNAME')!;
   
   constructor() { }
 

@@ -26,7 +26,7 @@ const routes: Routes = [
   { path: 'mis-turnos', component: MisTurnosComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.PACIENTE] }},
   { path: 'datos-personales', component: DatosPersonalesComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.PACIENTE] }},
   { path: 'administracion-usuarios', component: AdministracionUsuariosComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.ADMIN] }},
-  { path: 'crear-usuario', component: CrearUsuarioComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.ADMIN] }},
+  { path: 'crear-usuario', component: CrearUsuarioComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.ADMIN, RolUsuario.OPERADOR] }},
   { path: 'editar-usuario/:id', component: EditarUsuarioComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.ADMIN] }},
   { path: 'inicio-medico', component: InicioMedicoComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.MEDICO] }},
   { path: 'turnos-programados', component: TurnosProgramadosComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.MEDICO] }},

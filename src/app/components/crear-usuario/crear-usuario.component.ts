@@ -4,6 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { UtilService } from 'src/app/services/util.service'; 
 import { RegistroService } from 'src/app/services/usuario/registro.service';
 import { Usuario } from 'src/app/interfaces/usuario';
+import { Router } from '@angular/router';
 
 // Función de validación cruzada para verificar que las contraseñas coincidan
 export const passwordMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
@@ -27,10 +28,12 @@ export class CrearUsuarioComponent implements OnInit {
 
   rolesDisponibles: string[] = ['administrador', 'medico', 'operador'];
   usuarioForm: FormGroup;
+  rolUsuario = localStorage.getItem('USERROLE');
   
   private fb = inject(FormBuilder);
   private _registroService = inject(RegistroService);
   private _utilService = inject(UtilService);
+  private _router = inject(Router)
 
   constructor() {
     this.usuarioForm = this.fb.group({
@@ -110,7 +113,11 @@ export class CrearUsuarioComponent implements OnInit {
   }
 
   cancelar(): void {
-    this._utilService.openSnackBar('Cancelando y volviendo a la lista de administración.');
-    this.resetFormulario(); 
+    this.resetFormulario();
+    if(this.rolUsuario === 'ADMINISTRADOR'){
+      this._router.navigate(['/administracion-usuarios']);
+    }else{
+      this._router.navigate(['/inicio-operador']);
+    }
   }
 }

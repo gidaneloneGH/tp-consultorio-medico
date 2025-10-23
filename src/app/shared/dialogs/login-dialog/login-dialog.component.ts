@@ -56,7 +56,7 @@ export class LoginDialogComponent implements OnInit{
             case 'paciente': 
               this.router.navigate(['/inicio-paciente']);
               break;
-            case 'admin':
+            case 'administrador':
               this.router.navigate(['/inicio-admin']);
               break;
             case 'medico':

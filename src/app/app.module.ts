@@ -39,6 +39,7 @@ import { GestionCoberturasComponent } from './components/gestion-coberturas/gest
 import { GestionEspecialidadesComponent } from './components/gestion-especialidades/gestion-especialidades.component';
 import { AuthInterceptor } from './auth.interceptor';
 import { EditarTurnoComponent } from './shared/dialogs/editar-turno/editar-turno.component';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
 
 @NgModule({
@@ -84,7 +85,8 @@ import { EditarTurnoComponent } from './shared/dialogs/editar-turno/editar-turno
     A11yModule,
     HttpClientModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatTableModule
 ],
   providers: [
     {

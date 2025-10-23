@@ -60,8 +60,7 @@ export class UsuarioService {
 
 
   actualizarUsuario(id: string, usuario: Partial<Usuario>): Observable<respuestaApi<Usuario>> {
-    const endpoint = "/actualizarUsuario"
-    const url = this.api + endpoint
+    const url = `${this.api}/actualizarUsuario/${id}`;
 
     return this.http.put<respuestaApi<Usuario>>(url, usuario).pipe(
       map(response => {

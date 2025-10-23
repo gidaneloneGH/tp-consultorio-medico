@@ -1,65 +1,88 @@
 <div class="main-container">
-    <div class="schedule-card">
-        <h2 class="schedule-titulo">Agenda de Médicos</h2>
-        <p class="schedule-subtitulo">Visualiza la disponibilidad horaria de los especialistas y gestiona sus agendas.</p>
+  <div class="schedule-card">
+    <h2 class="schedule-titulo">Agenda de Médicos</h2>
+    <p class="schedule-subtitulo">
+      Visualiza la disponibilidad horaria de los especialistas y gestiona sus agendas.
+    </p>
 
-        <div class="schedule-header">
-            <p class="schedule-info">
-                Visualizando agenda para el: 
-                <strong>{{ fechaSeleccionada | date: 'fullDate' }}</strong>
-                <span *ngIf="esHoy(fechaSeleccionada)" class="tag-hoy"> (HOY)</span>
-            </p>
-            
-            <mat-form-field appearance="outline" class="date-picker-field">
-                <mat-label>Seleccionar Día</mat-label>
-                <input matInput [matDatepicker]="picker" 
-                       [value]="fechaSeleccionada"
-                       (dateChange)="onDateChange($event)"
-                       placeholder="Día de la Agenda">
-                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
-            </mat-form-field>
-        </div>
-        
-        <div class="turnos-tabla">
-            
-            <div class="tabla-cabecera">
-                <div class="col-nombre">Médico</div>
-                <div class="col-especialidad">Especialidad</div>
-                <div class="col-horario">Horario de Atención</div>
-                <div class="col-accion">Acciones</div>
-            </div>
+    <!-- Filtro de fecha -->
+    <div class="schedule-header">
+      <form [formGroup]="filtroFechaForm" (ngSubmit)="cambiarFecha()">
+        <mat-form-field appearance="outline" class="date-picker-field">
+          <mat-label>Seleccionar Día</mat-label>
+          <input
+            matInput
+            [matDatepicker]="picker"
+            formControlName="fecha"
+            placeholder="Día de la Agenda"
+          />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <button mat-raised-button color="primary" type="submit">Filtrar</button>
+      </form>
 
-            <div *ngIf="agendaMedicosVisible.length === 0" class="tabla-vacia">
-                <mat-icon>group_off</mat-icon>
-                <p>Ningún médico tiene horarios cargados para la fecha seleccionada.</p>
-            </div>
-
-            <div *ngFor="let medico of agendaMedicosVisible" 
-                 class="agenda-fila">
-                
-                <div class="col-nombre">
-                    <strong>Dr/a. {{ medico.apellidoMedico | uppercase }}, {{ medico.nombreMedico }}</strong>
-                </div>
-                
-                <div class="col-especialidad">
-                    <span class="especialidad-tag">{{ medico.especialidad }}</span>
-                </div>
-                
-                <div class="col-horario">
-                    {{ medico.horarioAtencionString || 'No definido' }}
-                </div>
-                
-                <div class="col-accion">
-                    <button mat-icon-button color="accent" matTooltip="Editar Agenda del Médico" (click)="editarAgenda(medico)">
-                        <mat-icon>edit</mat-icon>
-                    </button>
-                    <button mat-icon-button color="primary" matTooltip="Ver Turnos Confirmados" (click)="verTurnos(medico)">
-                        <mat-icon>visibility</mat-icon>
-                    </button>
-                </div>
-            </div>
-        </div>
-
+        <button mat-mini-fab color="primary" class="agregar-btn" matTooltip="Agregar Nuevo Usuario" [routerLink]="'/crear-usuario'">
+            <mat-icon>add</mat-icon>
+        </button>
     </div>
+
+    <!-- Tabla de agenda -->
+    <div class="turnos-tabla" *ngIf="dataSource.data.length > 0; else tablaVacia">
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+        <!-- Columna Médico -->
+        <ng-container matColumnDef="medico">
+          <th mat-header-cell *matHeaderCellDef> Médico </th>
+          <td mat-cell *matCellDef="let element"> {{ element.medico }} </td>
+        </ng-container>
+
+        <!-- Columna Especialidad -->
+        <ng-container matColumnDef="especialidad">
+          <th mat-header-cell *matHeaderCellDef> Especialidad </th>
+          <td mat-cell *matCellDef="let element"> {{ element.especialidad }} </td>
+        </ng-container>
+
+        <!-- Columna Horario -->
+        <ng-container matColumnDef="horario">
+          <th mat-header-cell *matHeaderCellDef> Horario de Atención </th>
+          <td mat-cell *matCellDef="let element"> {{ element.horario }} </td>
+        </ng-container>
+
+        <!-- Columna Acciones -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef> Acciones </th>
+          <td mat-cell *matCellDef="let element">
+            <button
+              mat-icon-button
+              color="accent"
+              matTooltip="Editar Agenda del Médico"
+              (click)="editarAgenda(element)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="primary"
+              matTooltip="Ver Turnos Confirmados"
+              (click)="verTurnos(element)"
+            >
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+
+    <!-- Mensaje tabla vacía -->
+    <ng-template #tablaVacia>
+      <div class="tabla-vacia">
+        <mat-icon>group_off</mat-icon>
+        <p>Ningún médico tiene horarios cargados para la fecha seleccionada.</p>
+      </div>
+    </ng-template>
+  </div>
 </div>

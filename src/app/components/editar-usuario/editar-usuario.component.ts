@@ -36,6 +36,8 @@ export class EditarUsuarioComponent implements OnInit {
   usuarioForm!: FormGroup;
   usuarioOriginal!: Usuario;
 
+  contraseñaUsuario: string = "";
+
   constructor(){
     this.usuarioForm = this.fb.group({
       nombre: ['', Validators.required],
@@ -89,6 +91,8 @@ export class EditarUsuarioComponent implements OnInit {
           rol: usuario.rol,
           id_cobertura: usuario.id_cobertura
         })
+
+        this.contraseñaUsuario = usuario.password!;
       },
       error: (err: HttpErrorResponse) => {
         this.isLoading = false;
@@ -137,6 +141,7 @@ export class EditarUsuarioComponent implements OnInit {
 
     const formValue = this.usuarioForm.getRawValue();
     const payload: Partial<Usuario> = {
+      dni: formValue.dni,
       rol: formValue.rol,
       nombre: formValue.nombre,
       apellido: formValue.apellido,
@@ -148,18 +153,20 @@ export class EditarUsuarioComponent implements OnInit {
 
     if (formValue.nuevaPassword) {
       payload.password = formValue.nuevaPassword;
+    }else{
+      payload.password = this.contraseñaUsuario;
     }
 
     this._usuarioService.actualizarUsuario(this.userId!, payload).subscribe({
       next: () => {
-        this._utilService.openSnackBar('✅ Usuario actualizado con éxito.');
+        this._utilService.openSnackBar('Usuario actualizado con éxito.');
         this.usuarioOriginal = { ...this.usuarioOriginal, ...payload };
         this.usuarioForm.get('nuevaPassword')?.reset();
         this.usuarioForm.get('confirmarPassword')?.reset();
       },
       error: (err: HttpErrorResponse) => {
         const mensajeError = err.error?.mensaje || 'Error desconocido al actualizar usuario';
-        this._utilService.openSnackBar(`❌ ${mensajeError}`);
+        this._utilService.openSnackBar(`${mensajeError}`);
       }
     });
   }

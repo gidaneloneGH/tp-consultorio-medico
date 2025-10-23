@@ -122,3 +122,9 @@
     height: 3rem;
     width: 3rem;
 }
+
+.agregar-btn {
+    margin-left: auto;
+    background-color: #4caf50;
+    color: white;
+}

@@ -9,11 +9,10 @@ import { Observable } from 'rxjs';
   selector: 'app-gestion-agenda',
   templateUrl: './gestion-agenda.component.html',
   styleUrls: ['./gestion-agenda.component.css'],
-  providers: [DatePipe] // Necesario si no está en el módulo
+  providers: [DatePipe]
 })
 export class GestionAgendaComponent implements OnInit {
 
-  // Inyección de servicios
   private _agendaService = inject(AgendaService);
   private _utilService = inject(UtilService);
   private datePipe = inject(DatePipe);
@@ -57,10 +56,8 @@ export class GestionAgendaComponent implements OnInit {
 
   this.rangosNuevos = []; 
 
-  // Llamada al servicio
   this._agendaService.obtenerAgendaPorDia(this.idMedico).subscribe({
     next: (rangos) => {
-      // 🔹 Filtrar por la fecha seleccionada
       this.rangosDelDia = rangos.filter(rango => {
         const fechaRango = this.formatFecha(new Date(rango.fecha));
         return fechaRango === diaString;
