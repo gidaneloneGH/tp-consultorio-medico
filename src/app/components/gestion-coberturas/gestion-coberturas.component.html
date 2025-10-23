@@ -3,43 +3,62 @@
         <h2 class="gestion-titulo">Gestión de Coberturas</h2>
         <p class="gestion-subtitulo">Alta, modificación y eliminación de obras sociales/prepagas.</p>
 
+        <div *ngIf="errorMessage" class="alerta-error">
+            <mat-icon>warning</mat-icon>
+            {{ errorMessage }}
+        </div>
+
         <h3 class="seccion-titulo">Crear Nueva Cobertura</h3>
-        <div class="alta-form">
+        <div class="alta-form" [formGroup]="altaForm">
             <mat-form-field appearance="outline" class="alta-input">
                 <mat-label>Nombre de la Cobertura</mat-label>
                 <input matInput 
-                       [(ngModel)]="nuevaCoberturaNombre" 
+                       formControlName="nombre" 
                        placeholder="Ej: OSDE 210"
                        (keyup.enter)="crearCobertura()">
+                
+                <mat-error *ngIf="altaForm.get('nombre')?.hasError('required') && altaForm.get('nombre')?.touched">
+                    El nombre es obligatorio.
+                </mat-error>
+                <mat-error *ngIf="altaForm.get('nombre')?.hasError('minlength') && altaForm.get('nombre')?.touched">
+                    Debe tener al menos 3 caracteres.
+                </mat-error>
+
             </mat-form-field>
-            <button mat-raised-button color="primary" [disabled]="!nuevaCoberturaNombre.trim()" (click)="crearCobertura()">
+            <button mat-raised-button color="primary" [disabled]="altaForm.invalid" (click)="crearCobertura()">
                 <mat-icon>add_circle_outline</mat-icon>
                 Dar de Alta
             </button>
         </div>
 
-        <h3 class="seccion-titulo">Coberturas Existentes</h3>
+        <h3 class="seccion-titulo">Coberturas Existentes ({{ coberturas.length }})</h3>
         
         <div class="tabla-scroll">
             <div class="tabla-cabecera">
                 <div class="col-nombre">Nombre</div>
                 <div class="col-accion">Acciones</div>
             </div>
+
+            <div *ngIf="coberturas.length === 0 && !errorMessage" class="tabla-vacia">
+                <mat-icon>info</mat-icon>
+                <p>No hay coberturas cargadas en el sistema.</p>
+            </div>
             
             <div *ngFor="let cob of coberturas" class="tabla-fila">
                 
-                <ng-container *ngIf="coberturaEditada?.id !== cob.id; else edicion">
+                <ng-container *ngIf="coberturaEditada?.id_cobertura !== cob.id_cobertura; else edicion">
                     <div class="col-nombre">
                         {{ cob.nombre }}
-                        <span class="asociada-tag" *ngIf="(usuariosConCobertura[cob.id]?.length || 0) > 0">
-                            ({{ usuariosConCobertura[cob.id]?.length || 0 }} asociado/s)
+                        
+                        <span class="asociada-tag" *ngIf="usuariosConCobertura[cob.id_cobertura]">
+                            ({{ usuariosConCobertura[cob.id_cobertura]?.length }} asociado/s)
                         </span>
                     </div>
                     <div class="col-accion">
                         <button mat-icon-button color="accent" matTooltip="Modificar Cobertura" (click)="iniciarEdicion(cob)">
                             <mat-icon>edit</mat-icon>
                         </button>
-                        <button mat-icon-button color="warn" matTooltip="Eliminar Cobertura" (click)="eliminarCobertura(cob.id, cob.nombre)">
+                        <button mat-icon-button color="warn" matTooltip="Eliminar Cobertura" (click)="eliminarCobertura(cob.id_cobertura, cob.nombre)">
                             <mat-icon>delete</mat-icon>
                         </button>
                     </div>
@@ -48,11 +67,16 @@
                 <ng-template #edicion>
                     <div class="col-nombre edicion-input-col">
                         <mat-form-field appearance="outline" class="full-width-input">
-                            <input matInput [(ngModel)]="coberturaEditada!.nombre" (keyup.enter)="guardarEdicion()">
+                            <input matInput [formControl]="edicionControl" (keyup.enter)="guardarEdicion()">
+                            
+                            <mat-error *ngIf="edicionControl.hasError('required') && edicionControl.touched">
+                                El nombre es obligatorio.
+                            </mat-error>
+
                         </mat-form-field>
                     </div>
                     <div class="col-accion">
-                        <button mat-icon-button color="primary" matTooltip="Guardar Cambios" (click)="guardarEdicion()">
+                        <button mat-icon-button color="primary" matTooltip="Guardar Cambios" [disabled]="edicionControl.invalid" (click)="guardarEdicion()">
                             <mat-icon>save</mat-icon>
                         </button>
                         <button mat-icon-button color="basic" matTooltip="Cancelar" (click)="cancelarEdicion()">

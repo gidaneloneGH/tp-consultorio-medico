@@ -57,8 +57,20 @@ export class AuthService {
     localStorage.removeItem('TOKEN');
     localStorage.removeItem('USERNAME');
     localStorage.removeItem('USERID');
-    localStorage.removeItem('USERROL');
+    localStorage.removeItem('USERROLE');
 
     this.router.navigate(['/menu']);
+  }
+
+  getToken(): string | null{
+    const token = localStorage.getItem('TOKEN');
+
+    return token;
+  }
+
+  getRolUsuario(): string | null{
+    const rol = localStorage.getItem('USERROLE');
+
+    return rol
   }
 }

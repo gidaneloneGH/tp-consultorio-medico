@@ -15,24 +15,26 @@ import { InicioOperadorComponent } from './components/inicio-operador/inicio-ope
 import { InicioAdminComponent } from './components/inicio-admin/inicio-admin.component';
 import { GestionCoberturasComponent } from './components/gestion-coberturas/gestion-coberturas.component';
 import { GestionEspecialidadesComponent } from './components/gestion-especialidades/gestion-especialidades.component';
+import { roleGuard } from './guards/role.guard';
+import { RolUsuario } from './shared/enum/rol-usuario.enum';
 
 const routes: Routes = [
   { path: '', redirectTo: 'menu', pathMatch: 'full' },
   { path: 'menu', component: MenuComponent },
-  { path: 'inicio-paciente', component: PacienteRegistradoComponent},
-  { path: 'nuevo-turno', component: NuevoTurnoComponent},
-  { path: 'mis-turnos', component: MisTurnosComponent},
-  { path: 'datos-personales', component: DatosPersonalesComponent},
-  { path: 'administracion-usuarios', component: AdministracionUsuariosComponent},
-  { path: 'crear-usuario', component: CrearUsuarioComponent},
-  { path: 'editar-usuario', component: EditarUsuarioComponent},
-  { path: 'inicio-medico', component: InicioMedicoComponent},
-  { path: 'turnos-programados', component: TurnosProgramadosComponent},
-  { path: 'gestion-agenda', component: GestionAgendaComponent},
-  { path: 'inicio-operador', component: InicioOperadorComponent},
-  { path: 'inicio-admin', component: InicioAdminComponent},
-  { path: 'gestion-coberturas', component: GestionCoberturasComponent},
-  { path: 'gestion-especialidades', component: GestionEspecialidadesComponent},
+  { path: 'inicio-paciente', component: PacienteRegistradoComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.PACIENTE] } },
+  { path: 'nuevo-turno', component: NuevoTurnoComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.PACIENTE] }},
+  { path: 'mis-turnos', component: MisTurnosComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.PACIENTE] }},
+  { path: 'datos-personales', component: DatosPersonalesComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.PACIENTE] }},
+  { path: 'administracion-usuarios', component: AdministracionUsuariosComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.ADMIN] }},
+  { path: 'crear-usuario', component: CrearUsuarioComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.ADMIN] }},
+  { path: 'editar-usuario', component: EditarUsuarioComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.ADMIN] }},
+  { path: 'inicio-medico', component: InicioMedicoComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.MEDICO] }},
+  { path: 'turnos-programados', component: TurnosProgramadosComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.MEDICO] }},
+  { path: 'gestion-agenda', component: GestionAgendaComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.MEDICO] }},
+  { path: 'inicio-operador', component: InicioOperadorComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.OPERADOR] }},
+  { path: 'inicio-admin', component: InicioAdminComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.ADMIN] }},
+  { path: 'gestion-coberturas', component: GestionCoberturasComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.ADMIN] }},
+  { path: 'gestion-especialidades', component: GestionEspecialidadesComponent, canActivate: [roleGuard], data: { roles: [RolUsuario.ADMIN] }},
 
   {path: '**', redirectTo: 'menu', pathMatch: 'full'}
 

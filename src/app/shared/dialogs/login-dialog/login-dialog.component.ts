@@ -51,7 +51,24 @@ export class LoginDialogComponent implements OnInit{
           this._utilService.openSnackBar("Bienvenido");
 
           this.dialogRef.close();
-          this.router.navigate(['/inicio-paciente']);
+
+          switch(res.payload[0].rol){
+            case 'paciente': 
+              this.router.navigate(['/inicio-paciente']);
+              break;
+            case 'admin':
+              this.router.navigate(['/inicio-admin']);
+              break;
+            case 'medico':
+              this.router.navigate(['/inicio-medico']);
+              break;
+            case 'operador':
+              this.router.navigate(['/inicio-operador']);
+              break;
+            default:
+              break;
+          }
+
         }else{
           this._utilService.openSnackBar(res.mensaje);
         }
